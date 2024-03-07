@@ -1,15 +1,13 @@
 package version_1_3.api.odata;
 
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utilies.Auth;
-import version_1_3.api.models.AuthUser;
-
-import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.sessionId;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*  только для .NET   в пути есть нуль
 {{BaseURI}}/0/ServiceModel/EntityDataService.svc
@@ -17,52 +15,48 @@ import static io.restassured.RestAssured.sessionId;
 {{BaseURI}}/ServiceModel/EntityDataService.svc   */
 public class FrameODataTests {
     Auth auth = new Auth();
-    AuthUser user = AuthUser.builder()
-            .userName(auth.getLogin())
-            .userPassword(auth.getPass())
-            .build();
+    /* JsonSchema в RestAssured - это инструмент, позволяющий проверить,
+     что возвращаемый JSON-ответ соответствует определенной схеме (JSON-схеме).
+     JSON-схема определяет ожидаемую структуру данных в JSON-ответе, включая типы данных,
+     обязательные и дополнительные поля, ограничения на значения и другие правила.
+     RestAssured позволяет использовать JSON-схему для автоматической проверки соответствия JSON-ответа этой схеме,
+     что помогает обеспечить правильность данных, возвращаемых из API.
+     // https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator
+             implementation 'io.rest-assured:json-schema-validator:5.4.0'
+
+     RestAssured.given()
+                .contentType(ContentType.JSON)
+                .get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
+                .then().assertThat().body(JsonSchemaValidator.matchesJsonSchema(schema));   */
+    String JsonSchema =
+            """
+                    {
+                        "type": "object",
+                        "properties": {
+                            "@odata.context": {"type": "string"},
+                            "value": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Id": {"type": "string"},
+                                        "Name": {"type": "string"}
+                                    },
+                                    "required": ["Id", "Name"]
+                                }
+                            }
+                        },
+                        "required": ["@odata.context", "value"]
+                    }""";
 
     @Test
     public void authFrame() {
         auth.authHttpORHttps("urlframework");
     }
 
-
     /*   {{BaseURI}}/0/odata/{{CollectionName1}}   */
     @Test
     public void GetObjectCollectionInstancesPositive() {
-        auth.authHttpORHttps("urlframework");
-
-        sessionId = "v4fgnegnqqal2bashjkrbtjm";
-        Response body = (Response) given()
-                .when()
-                //        .relaxedHTTPSValidation()  /* отключить проверку сертификатов  */
-                .header("Accept", "application/json")
-                //       .header("Content-Type", "application/json; charset=utf-8; IEEE754Compatible=true")
-                .header("ForceUseSession", "true")
-                //          .header("BPMCSRF", "<значение аутентификационного cookie>")
-                .header("BPMCSRF", auth.bpmcsrf)
-                //           .header("Cookie", auth.cookiesMap)
-                .contentType(ContentType.JSON)
-                //    .when()
-                .baseUri(auth.selectUrl("urlframework"))
-                .get("/0/odata/Contact")
-                .then()
-                .log().all()
-                .statusCode(200)
-
-                .extract()
-                .body();
-        System.out.println("А сейчас будет тело:\n" + body.asString());
-
-        System.out.println(auth.selectUrl("urlframework"));
-        System.out.println(auth.bpmcsrf);
-
-    }
-
-    /* http://qa026wfmb.rnd.omnichannel.ru:8500/0/odata/Contact?$select=Id,Name&BPMCSRF={{BPMCSRF}}&ForceUseSession=true  */
-    @Test
-    public void GetObjectCollectionInstancesSelectParametrsPositive() {
         auth.authHttpORHttps("urlframework");
 
         Response responseGet = given()
@@ -73,13 +67,73 @@ public class FrameODataTests {
                 .header("Cookie", auth.cookiesString)
 
                 .baseUri(auth.selectUrl("urlframework"))
-                .get("/0/odata/Contact?%24select=Id%2CName")
+                .get("/0/odata/Contact")
                 .then().log().all()
                 .statusCode(200)
                 .extract().response();
+
     }
 
     @Test
+    public void GetObjectCollectionInstancesSelectParametrsPositiveShema() {
+        auth.authHttpORHttps("urlframework");
+
+        Response responseGet =
+                given()
+                        .when()
+                        //   .header("ForceUseSession", "true")
+                        .header("Accept", "application/json;odata=verbose")
+                        .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                        .header("Cookie", auth.cookiesString)
+
+                        .queryParam("$select", "Id,Name")
+
+                        .baseUri(auth.selectUrl("urlframework"))
+                        /*     .get("/0/odata/Contact?%24select=Id%2CName")  */
+                        .get("/0/odata/Contact")
+                        .then().log().all()
+                        .statusCode(200)
+                        .assertThat()
+                        .body(matchesJsonSchema(JsonSchema))
+                        .extract().response();
+//        RestAssured.given()
+//                .contentType(ContentType.JSON)
+//                .get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
+//                .then().assertThat().body(matchesJsonSchema(JsonSchema));
+    }
+
+
+    /* http://qa026wfmb.rnd.omnichannel.ru:8500/0/odata/Contact?$select=Id,Name&BPMCSRF={{BPMCSRF}}&ForceUseSession=true  */
+    @Test
+    public void GetObjectCollectionInstancesSelectParametrsPositive() {
+        auth.authHttpORHttps("urlframework");
+
+        Response responseGet =
+                given()
+                        .when()
+                        //   .header("ForceUseSession", "true")
+                        .header("Accept", "application/json;odata=verbose")
+                        .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                        .header("Cookie", auth.cookiesString)
+
+                        .queryParam("$select", "Id,Name")
+
+                        .baseUri(auth.selectUrl("urlframework"))
+                        /*     .get("/0/odata/Contact?%24select=Id%2CName")  */
+                        .get("/0/odata/Contact")
+                        .then().log().all()
+                        .statusCode(200)
+                        .assertThat()
+//                        .body("value", hasItem("Id"))
+//                        .body("value", containsString("Name"))
+//                        .body("value", not(containsString("OwnerId")))
+                        .extract().response();
+        assertTrue(responseGet.asPrettyString().contains("Id"));
+        assertTrue(responseGet.asPrettyString().contains("Name"));
+        Assertions.assertFalse(responseGet.asPrettyString().contains("OwnerId"));
+    }
+
+ /*   @Test
     public void simpleTest() {
 
         Response response = given()
@@ -108,19 +162,11 @@ public class FrameODataTests {
                 .extract().response();
 
         System.out.println(responseGet.cookie("JSESSIONID") + "+++");
-    }
+    } */
 
 }
 /* ForceUseSession: Принудительное использование существующей сессии; */
-/*RestAssured запрос:
 
-given().header("Accept", "application/json")
-       .header("Content-Type", "application/json; charset=utf-8; IEEE754Compatible=true")
-       .header("ForceUseSession", "true")
-       .header("BPMCSRF", "<значение аутентификационного cookie>")
-       .body("{\"field1\": \"value1\", \"field2\": \"value2\"}")
-       .when().post("/your-endpoint")
-       .then().statusCode(200); */
 /* В RestAssured вы можете отключить проверку сертификатов сайта, используя метод relaxedHTTPSValidation().
 
 RestAssured.given()

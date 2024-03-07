@@ -32,7 +32,7 @@ tasks.withType(Test) {
 }
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:3.0.5'
+    implementation 'org.codehaus.groovy:groovy-all:3.0.9'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     /* https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params */
@@ -50,7 +50,7 @@ dependencies {
     /* https://mvnrepository.com/artifact/org.testng/testng
     для Java 8 , для новее можно и бОльшую версию
     это тестовый движёк, как и JUnit  */
-    testImplementation group: 'org.testng', name: 'testng', version: '6.14.3'
+    testImplementation group: 'org.testng', name: 'testng', version: '7.7.0'
     implementation 'io.rest-assured:rest-assured:4.4.0'
     testImplementation 'io.qameta.allure:allure-rest-assured:2.12.1'
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
@@ -78,6 +78,10 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 /*  для скриншотов  */
     implementation 'ru.yandex.qatools.ashot:ashot:1.5.4'
+/* для проверки соответствия ответа json схеме */
+    // https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator
+    implementation 'io.rest-assured:json-schema-validator:5.4.0'
+
 
 }
 
