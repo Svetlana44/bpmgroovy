@@ -1,9 +1,12 @@
 package version_1_3.api.odata;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utilies.Auth;
+import utilies.GeneratorRandomData;
+import version_1_3.api.models.Contact;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
@@ -56,7 +59,9 @@ public class FrameODataTests {
 
     /*   {{BaseURI}}/0/odata/{{CollectionName1}}   */
     @Test
-    public void GetObjectCollectionInstancesPositive() {
+    public void getObjectCollectionInstancesPositive() {
+        Contact contact = GeneratorRandomData.GenerateRandomContact();
+
         auth.authHttpORHttps("urlframework");
 
         Response responseGet = given()
@@ -65,17 +70,18 @@ public class FrameODataTests {
                 .header("Accept", "application/json;odata=verbose")
                 .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
                 .header("Cookie", auth.cookiesString)
-
+                .contentType(ContentType.JSON)
+                .body(contact)
                 .baseUri(auth.selectUrl("urlframework"))
-                .get("/0/odata/Contact")
+                .post("/0/odata/Contact")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().response();
 
     }
 
     @Test
-    public void GetObjectCollectionInstancesSelectParametrsPositiveShema() {
+    public void getObjectCollectionInstancesSelectParametrsPositiveShema() {
         auth.authHttpORHttps("urlframework");
 
         Response responseGet =
@@ -105,7 +111,38 @@ public class FrameODataTests {
 
     /* http://qa026wfmb.rnd.omnichannel.ru:8500/0/odata/Contact?$select=Id,Name&BPMCSRF={{BPMCSRF}}&ForceUseSession=true  */
     @Test
-    public void GetObjectCollectionInstancesSelectParametrsPositive() {
+    public void getObjectCollectionInstancesSelectParametrsPositive() {
+        auth.authHttpORHttps("urlframework");
+
+        Response responseGet =
+                given()
+                        .when()
+                        //   .header("ForceUseSession", "true")
+                        .header("Accept", "application/json;odata=verbose")
+                        .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                        .header("Cookie", auth.cookiesString)
+
+                        .queryParam("$select", "Id,Name")
+
+                        .baseUri(auth.selectUrl("urlframework"))
+                        /*     .get("/0/odata/Contact?%24select=Id%2CName")  */
+                        .get("/0/odata/Contact")
+                        .then().log().all()
+                        .statusCode(200)
+                        .assertThat()
+//                        .body("value", hasItem("Id"))
+//                        .body("value", containsString("Name"))
+//                        .body("value", not(containsString("OwnerId")))
+                        .extract().response();
+        assertTrue(responseGet.asPrettyString().contains("Id"));
+        assertTrue(responseGet.asPrettyString().contains("Name"));
+        Assertions.assertFalse(responseGet.asPrettyString().contains("OwnerId"));
+    }
+
+    /*  Add object collection instance Contact Copy
+    post("http://{{BaseURL}}/0/odata/Contact")  */
+    @Test
+    public void postAddObjectCollectionInstanceContactPositive() {
         auth.authHttpORHttps("urlframework");
 
         Response responseGet =
