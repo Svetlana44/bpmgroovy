@@ -5,12 +5,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utilies.Auth;
-import utilies.GeneratorRandomData;
-import version_1_3.api.models.Contact;
+import utilies.ContactServicies;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static utilies.ContactServicies.JsonSchema;
 
 /*  только для .NET   в пути есть нуль
 {{BaseURI}}/0/ServiceModel/EntityDataService.svc
@@ -31,26 +31,7 @@ public class FrameODataTests {
                 .contentType(ContentType.JSON)
                 .get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
                 .then().assertThat().body(JsonSchemaValidator.matchesJsonSchema(schema));   */
-    String JsonSchema =
-            """
-                    {
-                        "type": "object",
-                        "properties": {
-                            "@odata.context": {"type": "string"},
-                            "value": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "Id": {"type": "string"},
-                                        "Name": {"type": "string"}
-                                    },
-                                    "required": ["Id", "Name"]
-                                }
-                            }
-                        },
-                        "required": ["@odata.context", "value"]
-                    }""";
+
 
     @Test
     public void authFrame() {
@@ -60,24 +41,20 @@ public class FrameODataTests {
     /*   {{BaseURI}}/0/odata/{{CollectionName1}}   */
     @Test
     public void getObjectCollectionInstancesPositive() {
-        Contact contact = GeneratorRandomData.GenerateRandomContact();
+        ContactServicies.getAllContacts(auth);
+    }
 
-        auth.authHttpORHttps("urlframework");
-
-        Response responseGet = given()
-                .when()
-                //   .header("ForceUseSession", "true")
-                .header("Accept", "application/json;odata=verbose")
-                .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
-                .header("Cookie", auth.cookiesString)
-                .contentType(ContentType.JSON)
-                .body(contact)
-                .baseUri(auth.selectUrl("urlframework"))
-                .post("/0/odata/Contact")
-                .then().log().all()
-                .statusCode(201)
-                .extract().response();
-
+    /*  {{BaseURI}}/0/odata/{{CollectionName1}}({{ObjectId1}})/{{FieldName1}}/$value
+    $value - это специальный параметр,
+     нужно получить значение конкретного поля (FieldName1) объекта (ObjectId1) из коллекции (CollectionName1)
+     слово "value" не нужно ни чем заменять, писать как есть.   */
+    @Test
+    public void getNameOfContactById() {
+        String name = ContactServicies
+                .getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00")
+                .body().asPrettyString()
+                .replace("\uFEFF", "").replace("\u200B", "");
+        Assertions.assertEquals("Supervisor", name);
     }
 
     @Test
@@ -102,10 +79,6 @@ public class FrameODataTests {
                         .assertThat()
                         .body(matchesJsonSchema(JsonSchema))
                         .extract().response();
-//        RestAssured.given()
-//                .contentType(ContentType.JSON)
-//                .get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
-//                .then().assertThat().body(matchesJsonSchema(JsonSchema));
     }
 
 
@@ -129,7 +102,7 @@ public class FrameODataTests {
                         .get("/0/odata/Contact")
                         .then().log().all()
                         .statusCode(200)
-                        .assertThat()
+                        //                       .assertThat()
 //                        .body("value", hasItem("Id"))
 //                        .body("value", containsString("Name"))
 //                        .body("value", not(containsString("OwnerId")))
@@ -143,31 +116,47 @@ public class FrameODataTests {
     post("http://{{BaseURL}}/0/odata/Contact")  */
     @Test
     public void postAddObjectCollectionInstanceContactPositive() {
-        auth.authHttpORHttps("urlframework");
+        Response response = ContactServicies.addRandomContact(auth);
+        String id = response.path("Id");
+        String name = response.path("Name");
+        /* нужно проверить гетом, что есть контакт */
+        String actualName = ContactServicies
+                .getNameOfContactById(auth, id)
+                .body().asPrettyString()
+                .replace("\uFEFF", "").replace("\u200B", "");
+        Assertions.assertEquals(name, actualName);
+    }
 
-        Response responseGet =
-                given()
-                        .when()
-                        //   .header("ForceUseSession", "true")
-                        .header("Accept", "application/json;odata=verbose")
-                        .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
-                        .header("Cookie", auth.cookiesString)
+    /*  {{BaseURI}}/0/odata/{{CollectionName1}}({{ObjectId1}})  */
+    @Test
+    public void patchModifyObjectCollectionInstanceContactPositive() {
+        Response response = ContactServicies.addRandomContact(auth);
 
-                        .queryParam("$select", "Id,Name")
+        String id = response.path("Id");
+        System.out.println("========" + id);
 
-                        .baseUri(auth.selectUrl("urlframework"))
-                        /*     .get("/0/odata/Contact?%24select=Id%2CName")  */
-                        .get("/0/odata/Contact")
-                        .then().log().all()
-                        .statusCode(200)
-                        .assertThat()
-//                        .body("value", hasItem("Id"))
-//                        .body("value", containsString("Name"))
-//                        .body("value", not(containsString("OwnerId")))
-                        .extract().response();
-        assertTrue(responseGet.asPrettyString().contains("Id"));
-        assertTrue(responseGet.asPrettyString().contains("Name"));
-        Assertions.assertFalse(responseGet.asPrettyString().contains("OwnerId"));
+        given()
+                .when()
+                //   .header("ForceUseSession", "true")
+                .header("Accept", "application/json;odata=verbose")
+                .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                .header("Cookie", auth.cookiesString)
+
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "MobilePhone": "+7 999 123 1234"
+                        }""")
+
+                .baseUri(auth.selectUrl("urlframework"))
+                .patch("/0/odata/Contact(" + id + ")")
+                .then().log().all()
+                .statusCode(204);
+
+        Response responseModify = ContactServicies.getContactById(auth, id);
+        Assertions.assertEquals("+7 999 123 1234", responseModify.path("MobilePhone"));
+        /* .assertThat().body("MobilePhone", equalTo("+7 999 123 1234")) */
+
     }
 
  /*   @Test

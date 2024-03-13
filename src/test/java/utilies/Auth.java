@@ -59,7 +59,10 @@ public class Auth {
 
     public static void main(String[] args) {
         Auth auth = new Auth();
-        auth.authHttpORHttps("urlframework");
+//        auth.authHttpORHttps("urlframework");
+
+
+        ContactServicies.getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
     }
 
     @Step("Загрузка stands.properties")

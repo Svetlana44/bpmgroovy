@@ -14,7 +14,7 @@ src\test\resources\FailedTests.txt
 
 ### Модели данных
 
-Для того чтобы заменить пустое значение null на пустую строку в Lombok,
+Для того, чтобы заменить пустое значение null на пустую строку в Lombok,
 можно использовать аннотацию @JsonInclude с параметром Include.NON_NULL.
 Добавьте аннотацию @JsonInclude(Include.NON_NULL) к вашему классу Contact,
 и это позволит сериализатору Jackson исключать значения null при преобразовании объекта в JSON.
@@ -80,6 +80,12 @@ String JsonSchema =
                     },
                     "required": ["@odata.context", "value"]
                 }""";
+````
+
+Для обрезания ZWNBSP (неразрывного пробела) в тексте используется
+
+````
+str.replace("\uFEFF", "").replace("\u200B", "");
 ````
 
 
