@@ -41,7 +41,8 @@ public class ContactServicies {
 //        auth.authHttpORHttps("urlframework");
 
         //     ContactServicies.getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
-        ContactServicies.getContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
+//        ContactServicies.getContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
+        ContactServicies.deleteContacts(auth, "3b0160df-cb97-42df-aa40-419f49ae9053");
     }
 
     @Step("Генерация рандомного контакта")
@@ -97,6 +98,28 @@ public class ContactServicies {
                         , чтобы удалить все невидимые пробелы из ответа */
     }
 
+    @Step("Запрос отсутствующего Контакта по Id")
+    public static Response getContactByIdNegative(Auth auth, String id) {
+        auth.authHttpORHttps("urlframework");
+
+        return
+                given()
+                        .when()
+                        //   .header("ForceUseSession", "true")
+                        .header("Accept", "application/json;odata=verbose")
+                        .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                        .header("Cookie", auth.cookiesString)
+
+                        .baseUri(auth.selectUrl("urlframework"))
+                        /*     {{BaseURI}}/0/odata/{{CollectionName1}}({{ObjectId1}})/{{FieldName1}}/$value */
+                        .get("/0/odata/Contact(" + id + ")")
+                        .then().log().all()
+                        .statusCode(404)
+                        .extract().response();
+                        /* не забыть обрезать пробел  (ZWNBSP)  str.replace("\uFEFF", "").replace("\u200B", "")
+                        , чтобы удалить все невидимые пробелы из ответа */
+    }
+
     @Step("Нахождение Name по Id")
     public static Response getNameOfContactById(Auth auth, String id) {
         auth.authHttpORHttps("urlframework");
@@ -140,4 +163,42 @@ public class ContactServicies {
                 .extract().response();
     }
 
+    /* {{url}}/0/odata/Contact(410006e1-ca4e-4502-a9ec-e54d922d2c00) Supervisor */
+    @Step("Удаление контакта")
+    public static Response deleteContacts(Auth auth, String id) {
+
+        auth.authHttpORHttps("urlframework");
+
+        return given()
+                .when()
+                //   .header("ForceUseSession", "true")
+                .header("Accept", "application/json;odata=verbose")
+                .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                .header("Cookie", auth.cookiesString)
+                .contentType(ContentType.JSON)
+                .baseUri(auth.selectUrl("urlframework"))
+                .delete("/0/odata/Contact(" + id + ")")
+                .then().log().all()
+                .statusCode(204)
+                .extract().response();
+    }
+
+    @Step("Удаление отсутствующего контакта")
+    public static Response deleteContactNegative(Auth auth, String id) {
+
+        auth.authHttpORHttps("urlframework");
+
+        return given()
+                .when()
+                //   .header("ForceUseSession", "true")
+                .header("Accept", "application/json;odata=verbose")
+                .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                .header("Cookie", auth.cookiesString)
+                .contentType(ContentType.JSON)
+                .baseUri(auth.selectUrl("urlframework"))
+                .delete("/0/odata/Contact(" + id + ")")
+                .then().log().all()
+                .statusCode(404)
+                .extract().response();
+    }
 }

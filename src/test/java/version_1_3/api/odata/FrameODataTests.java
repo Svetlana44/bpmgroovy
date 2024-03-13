@@ -159,6 +159,27 @@ public class FrameODataTests {
 
     }
 
+    /* {{url}}/0/odata/Contact(410006e1-ca4e-4502-a9ec-e54d922d2c00) Supervisor */
+    @Test
+    public void deleteContactPositive() {
+        Response response = ContactServicies.addRandomContact(auth);
+        String id = response.path("Id");
+        String name = response.path("Name");
+        /* нужно проверить гетом, что есть контакт */
+        String actualName = ContactServicies
+                .getNameOfContactById(auth, id)
+                .body().asPrettyString()
+                .replace("\uFEFF", "").replace("\u200B", "");
+        Assertions.assertEquals(name, actualName);
+        /* теперь само удаление */
+        ContactServicies.deleteContacts(auth, id);
+        Response responseDel = ContactServicies.getContactByIdNegative(auth, id);
+        Assertions.assertEquals(404, responseDel.getStatusCode());
+        responseDel = ContactServicies.deleteContactNegative(auth, id);
+        Assertions.assertEquals(404, responseDel.getStatusCode());
+        Assertions.assertEquals("Not found", responseDel.path(("error.message")));
+
+    }
  /*   @Test
     public void simpleTest() {
 
