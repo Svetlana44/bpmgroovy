@@ -1,4 +1,4 @@
-package version_1_3.api.odata;
+package version_1_3.api.odata4;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

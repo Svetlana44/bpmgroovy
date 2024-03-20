@@ -1,4 +1,4 @@
-package version_1_3.api.odata;
+package version_1_3.api.odata4;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
