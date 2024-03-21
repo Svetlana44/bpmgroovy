@@ -4,7 +4,7 @@ stages:
 
 Run Tests:
   tags:
-    - bpmgroovyRunner
+    - bpmgroovyRunner2
   stage: tests
   allow_failure: true
   script:
@@ -17,7 +17,7 @@ Run Tests:
 Allure report:
   stage: allure
   tags:
-    - bpmgroovyRunner
+    - bpmgroovyRunner2
   script:
     - ./gradlew allureReport
     - echo "Allure report live here - https://${CI_PROJECT_NAMESPACE}.${CI_PAGES_DOMAIN}/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/build/reports/allure-report/allureReport/index.html"
