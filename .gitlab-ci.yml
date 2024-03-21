@@ -8,7 +8,7 @@ Run Tests:
   stage: test
   allow_failure: true
   script:
-    - ./gradlew clean myTags -x test"
+    - ./gradlew clean test"
   artifacts:
     when: always
     paths:
