@@ -112,4 +112,19 @@ str.replace("\uFEFF", "").replace("\u200B", "");
  Assertions.assertEquals("Not found", responseDel.path(("error.message")));
 ````
 
+Ошибка для gitlab-runner в Windows 11
+"shell" executor **"pwsh"** переименовали в **powershell**
 
+````
+Running with gitlab-runner 16.9.1 (782c6ecb)
+on 2duscrib yryxg5Zo, system ID: s_11f5ba618cf6
+Preparing the "shell" executor
+00:00
+Using Shell (pwsh) executor...
+Preparing environment
+00:00
+ERROR: Job failed (system failure): prepare environment: failed to start process: exec: "pwsh": executable file not found in %PATH%. Check https://docs.gitlab.com/runner/shells/index.html#shell-profile-loading for more information
+````
+
+нужно в папке с ранером C:\GitLab-Runner в конфиге поменять
+**"pwsh"** на **powershell**
