@@ -1,11 +1,11 @@
 stages:
-  - tests
+  - test
   - allure
 
 Run Tests:
   tags:
     - bpmgroovyRunner2
-  stage: tests
+  stage: test
   allow_failure: true
   script:
     - ./gradlew clean myTags -x test"
