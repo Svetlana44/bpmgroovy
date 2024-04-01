@@ -16,7 +16,8 @@ import static com.codeborne.selenide.Selenide.$x;
 public class AuthPageSelenide {
     private final SelenideElement loginField = $x("//input[@id='loginEdit-el']");
     private final SelenideElement passField = $("#passwordEdit-el");
-    private final SelenideElement authBtn = $x("//span[@id='t-comp14-textEl']");
+    /*   private final SelenideElement authBtn = $x("//span[@id='t-comp14-textEl']");  */
+    private final SelenideElement authBtn = $x("//div[@id='loginRememberContainer']/span[@data-item-marker=\"btnLogin\"]");
     private String login;
     private String pass;
     private String url;

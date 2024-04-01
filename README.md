@@ -128,3 +128,22 @@ ERROR: Job failed (system failure): prepare environment: failed to start process
 
 нужно в папке с ранером C:\GitLab-Runner в конфиге поменять
 **"pwsh"** на **powershell**
+
+###
+
+### <ins>  Установка параметра trustServerCertificate в true  </ins>
+
+Properties properties = new Properties();
+properties.setProperty("urlDB", "jdbc:sqlserver://1.1.1.1:
+1433/48_SVET4_1.4.0.3084_Net_MsSQL;trustServerCertificate=true");
+properties.setProperty("userDB", "your_username");
+properties.setProperty("passwordDB", "your_password");
+
+// Загрузка JDBC драйвера
+Class.forName(properties.getProperty("driverDB-class-name"));
+
+// Установка соединения с базой данных
+Connection connection = DriverManager.getConnection(
+properties.getProperty("urlDB"),
+properties.getProperty("userDB"),
+properties.getProperty("passwordDB"));
