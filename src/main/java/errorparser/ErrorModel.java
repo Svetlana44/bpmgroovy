@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class ErrorModel {
     public String packageName;
     public String lastError;
-    public boolean NeedInstall;
+    public boolean needInstall;
     public String ObjectName; /*  В чём ошибка, данные или скрипт или Клиентский модуль  */
 }

@@ -53,6 +53,7 @@ dependencies {
     implementation group: 'org.testng', name: 'testng', version: '7.7.0'
     implementation 'io.rest-assured:rest-assured:4.4.0'
     implementation 'io.qameta.allure:allure-rest-assured:2.12.1'
+    /* для русских ФИО     Faker faker = new Faker(new Locale("ru")); */
     implementation 'com.github.javafaker:javafaker:1.0.2'
     implementation 'org.assertj:assertj-core:3.25.3'
 // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java

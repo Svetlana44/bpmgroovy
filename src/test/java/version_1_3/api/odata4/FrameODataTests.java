@@ -5,12 +5,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utilies.Auth;
-import utilies.ContactServicies;
+import utilies.ContactServiciesFrame;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static utilies.ContactServicies.JsonSchema;
+import static utilies.ContactServiciesFrame.IDandNameJsonSchema;
 
 /*  только для .NET   в пути есть нуль
 {{BaseURI}}/0/ServiceModel/EntityDataService.svc
@@ -41,7 +41,7 @@ public class FrameODataTests {
     /*   {{BaseURI}}/0/odata/{{CollectionName1}}   */
     @Test
     public void getObjectCollectionInstancesPositive() {
-        ContactServicies.getAllContacts(auth);
+        ContactServiciesFrame.getAllContacts(auth);
     }
 
     /*  {{BaseURI}}/0/odata/{{CollectionName1}}({{ObjectId1}})/{{FieldName1}}/$value
@@ -50,7 +50,7 @@ public class FrameODataTests {
      слово "value" не нужно ни чем заменять, писать как есть.   */
     @Test
     public void getNameOfContactById() {
-        String name = ContactServicies
+        String name = ContactServiciesFrame
                 .getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00")
                 .body().asPrettyString()
                 .replace("\uFEFF", "").replace("\u200B", "");
@@ -77,7 +77,7 @@ public class FrameODataTests {
                         .then().log().all()
                         .statusCode(200)
                         .assertThat()
-                        .body(matchesJsonSchema(JsonSchema))
+                        .body(matchesJsonSchema(IDandNameJsonSchema))
                         .extract().response();
     }
 
@@ -116,11 +116,11 @@ public class FrameODataTests {
     post("http://{{BaseURL}}/0/odata/Contact")  */
     @Test
     public void postAddObjectCollectionInstanceContactPositive() {
-        Response response = ContactServicies.addRandomContact(auth);
+        Response response = ContactServiciesFrame.addRandomContact(auth, ContactServiciesFrame.generateRandomSimpleContact());
         String id = response.path("Id");
         String name = response.path("Name");
         /* нужно проверить гетом, что есть контакт */
-        String actualName = ContactServicies
+        String actualName = ContactServiciesFrame
                 .getNameOfContactById(auth, id)
                 .body().asPrettyString()
                 .replace("\uFEFF", "").replace("\u200B", "");
@@ -130,7 +130,7 @@ public class FrameODataTests {
     /*  {{BaseURI}}/0/odata/{{CollectionName1}}({{ObjectId1}})  */
     @Test
     public void patchModifyObjectCollectionInstanceContactPositive() {
-        Response response = ContactServicies.addRandomContact(auth);
+        Response response = ContactServiciesFrame.addRandomContact(auth, ContactServiciesFrame.generateRandomSimpleContact());
 
         String id = response.path("Id");
         System.out.println("========" + id);
@@ -153,7 +153,7 @@ public class FrameODataTests {
                 .then().log().all()
                 .statusCode(204);
 
-        Response responseModify = ContactServicies.getContactById(auth, id);
+        Response responseModify = ContactServiciesFrame.getContactById(auth, id);
         Assertions.assertEquals("+7 999 123 1234", responseModify.path("MobilePhone"));
         /* .assertThat().body("MobilePhone", equalTo("+7 999 123 1234")) */
 
@@ -162,20 +162,20 @@ public class FrameODataTests {
     /* {{url}}/0/odata/Contact(410006e1-ca4e-4502-a9ec-e54d922d2c00) Supervisor */
     @Test
     public void deleteContactPositive() {
-        Response response = ContactServicies.addRandomContact(auth);
+        Response response = ContactServiciesFrame.addRandomContact(auth, ContactServiciesFrame.generateRandomSimpleContact());
         String id = response.path("Id");
         String name = response.path("Name");
         /* нужно проверить гетом, что есть контакт */
-        String actualName = ContactServicies
+        String actualName = ContactServiciesFrame
                 .getNameOfContactById(auth, id)
                 .body().asPrettyString()
                 .replace("\uFEFF", "").replace("\u200B", "");
         Assertions.assertEquals(name, actualName);
         /* теперь само удаление */
-        ContactServicies.deleteContacts(auth, id);
-        Response responseDel = ContactServicies.getContactByIdNegative(auth, id);
+        ContactServiciesFrame.deleteContacts(auth, id);
+        Response responseDel = ContactServiciesFrame.getContactByIdNegative(auth, id);
         Assertions.assertEquals(404, responseDel.getStatusCode());
-        responseDel = ContactServicies.deleteContactNegative(auth, id);
+        responseDel = ContactServiciesFrame.deleteContactNegative(auth, id);
         Assertions.assertEquals(404, responseDel.getStatusCode());
         Assertions.assertEquals("Not found", responseDel.path(("error.message")));
 

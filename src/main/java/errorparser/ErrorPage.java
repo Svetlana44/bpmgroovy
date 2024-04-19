@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.util.*;
 
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 
 public class ErrorPage {
@@ -44,7 +45,7 @@ public class ErrorPage {
     /*   ячейка Объект (бывает пусто)   */
 //ts-workspace-item-status-cell/div/div/mat-icon/parent::div/parent::div/ancestor::td/parent::*/td[6]
     /* меню выбора фильтра "С ошибкой"  */
-    private final SelenideElement errorMenu = $x("//span[contains(text(),'С ошибкой')]");
+    private final SelenideElement errorMenu = $x("//div[contains(text(),'С ошибкой')]");
     /*    ячейка Пакет */
 //ts-workspace-item-status-cell/div/div/mat-icon/parent::div/parent::div/ancestor::td/parent::*/td[8]   */
     private final ElementsCollection packegeCell = $$x("//ts-workspace-item-status-cell/div/div/mat-icon/parent::div/parent::div/ancestor::td/parent::*/td[8]");
@@ -52,13 +53,19 @@ public class ErrorPage {
     private final SelenideElement passField = $("#passwordEdit-el");
     private final SelenideElement authBtn = $x("//div[@id='loginRememberContainer']/span[@data-item-marker=\"btnLogin\"]");
     private final Properties properties = new Properties();
+    private final ElementsCollection rowsErr = $$x("//ts-workspace-item-status-cell/div/div/mat-icon/parent::div/parent::div/ancestor::td/parent::*");
+    private final Set<String> pakcagiesName = new HashSet<>();
 
     public ErrorPage() {
 
         try (InputStream in = ErrorPage.class.getClassLoader().getResourceAsStream("errorpage.properties")) {
             properties.load(in);
+            LOG.info("Загружены errorpage.properties для страницы Конфигурация.");
+
             Configuration.browser = "firefox";
             System.setProperty("webdriver.gecko.driver", "src/test/resources/geckodriver.exe");
+            LOG.info("Загружен драйвер src/test/resources/geckodriver.exe.");
+
             FirefoxOptions options = new FirefoxOptions();/* отключить алерты в браузере  */
             options.addPreference("dom.webnotifications.enabled", false); /* нашел для файфокса)   *//* отключить алерты в браузере  */
             options.addPreference("dom.webnotifications.enabled", false); // отключить всплывающие блокировщики
@@ -91,7 +98,15 @@ public class ErrorPage {
 
     public static void main(String[] args) {
         ErrorPage errorPage = new ErrorPage();
-        errorPage.parseErrorAndNeedInstallDataAndSQLscripts();
+        errorPage.parseErrorDataAndSQLscripts();
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public Set<String> getPakcagiesName() {
+        return pakcagiesName;
     }
 
     public ErrorPage parseNeedInstallDataAndSQLscripts() {
@@ -158,7 +173,7 @@ public class ErrorPage {
         return this;
     }
 
-    public ErrorPage parseErrorAndNeedInstallDataAndSQLscripts() {
+    public ErrorPage parseErrorDataAndSQLscripts() {
         LOG.info("Создание экземпляра класса ErrorPage. ");
 
         this.systemDesignerMenuWrapBtn.should(Condition.enabled, Duration.ofSeconds(30));
@@ -191,25 +206,25 @@ public class ErrorPage {
         LOG.info("Переключаемся на последнюю вкладку. При падении теста, посмотреть, сколько вкладок посчитано.");
 
         //     Selenide.sleep(30000);
+        if ($(byText("Фильтры")).exists()) {
+            /* Находим элемент и кликаем на него   */
+            this.statusFiltr.should(Condition.enabled, Duration.ofSeconds(30));
+            this.statusFiltr.click();
+            LOG.info("Выбор фильтра по статусу.");
 
-        /* Находим элемент и кликаем на него   */
-        this.statusFiltr.should(Condition.enabled, Duration.ofSeconds(30));
-        this.statusFiltr.click();
-        LOG.info("Выбор фильтра по статусу.");
 
-        this.errorMenu.should(Condition.enabled, Duration.ofSeconds(30));
-        this.errorMenu.click();
-        LOG.info("Выбор меню фильтрации \"С ошибкой\".");
+            this.errorMenu.should(Condition.enabled, Duration.ofSeconds(30));
+            this.errorMenu.click();
+            LOG.info("Выбор меню фильтрации \"С ошибкой\".");
+        }
 
-        ElementsCollection pakcagies = this.packegeCell;
-        Set<String> pakcagiesName = new HashSet<>();
         this.packegeCell.forEach(p -> pakcagiesName.add(p.getText()));
         System.out.println(pakcagiesName);
         //     errorPage.PackegeCell.forEach(e -> System.out.println(e.getText()));
 
         /* общий элемент
 находит как раз только с ошибками*/
-        ElementsCollection rowsErr = $$x("//ts-workspace-item-status-cell/div/div/mat-icon/parent::div/parent::div/ancestor::td/parent::*");
+
         this.parseErrString(rowsErr).forEach((k, v) -> {
             System.out.println(k + "===============================");
             v.forEach(System.out::println);

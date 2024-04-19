@@ -2,10 +2,14 @@ package version_1_3.api.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.javafaker.Faker;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Locale;
+import java.util.Random;
 
 /* Для того чтобы заменить пустое значение null на пустую строку в Lombok,
  можно использовать аннотацию @JsonInclude с параметром Include.NON_NULL.
@@ -170,4 +174,63 @@ public class Contact {
 
     @JsonProperty("LanguageId")
     private String languageId;
+    private static final Random random = new Random();
+    private static final Faker faker = new Faker(new Locale("ru"));
+
 }
+/*
+{
+    "@odata.context": "http://qa026wfmb.rnd.omnichannel.ru:8533/0/odata/$metadata#Contact/$entity",
+    "Id": "410006e1-ca4e-4502-a9ec-e54d922d2c00",
+    "Name": "Supervisor",
+    "OwnerId": "00000000-0000-0000-0000-000000000000",
+    "CreatedOn": "2019-07-15T20:04:57.2908376Z",
+    "CreatedById": "410006e1-ca4e-4502-a9ec-e54d922d2c00",
+    "ModifiedOn": "2020-06-26T13:30:25.9945528Z",
+    "ModifiedById": "410006e1-ca4e-4502-a9ec-e54d922d2c00",
+    "ProcessListeners": 0,
+    "Dear": "",
+    "SalutationTypeId": "7426ffb3-56e6-df11-971b-001d60e938c6",
+    "GenderId": "eeac42ee-65b6-df11-831a-001d60e938c6",
+    "AccountId": "e308b781-3c5b-4ecb-89ef-5c1ed4da488e",
+    "DecisionRoleId": "00000000-0000-0000-0000-000000000000",
+    "TypeId": "60733efc-f36b-1410-a883-16d83cab0980",
+    "JobId": "00000000-0000-0000-0000-000000000000",
+    "JobTitle": "",
+    "DepartmentId": "00000000-0000-0000-0000-000000000000",
+    "BirthDate": "0001-01-01T00:00:00Z",
+    "Phone": "",
+    "MobilePhone": "",
+    "HomePhone": "",
+    "Skype": "",
+    "Email": "",
+    "AddressTypeId": "00000000-0000-0000-0000-000000000000",
+    "Address": "",
+    "CityId": "00000000-0000-0000-0000-000000000000",
+    "RegionId": "00000000-0000-0000-0000-000000000000",
+    "Zip": "",
+    "CountryId": "00000000-0000-0000-0000-000000000000",
+    "DoNotUseEmail": true,
+    "DoNotUseCall": true,
+    "DoNotUseFax": false,
+    "DoNotUseSms": true,
+    "DoNotUseMail": true,
+    "Notes": "",
+    "ContactPhoto@odata.mediaEditLink": "Contact(410006e1-ca4e-4502-a9ec-e54d922d2c00)/ContactPhoto",
+    "ContactPhoto@odata.mediaReadLink": "Contact(410006e1-ca4e-4502-a9ec-e54d922d2c00)/ContactPhoto",
+    "ContactPhoto@odata.mediaContentType": "application/octet-stream",
+    "PhotoId": "00000000-0000-0000-0000-000000000000",
+    "GPSN": "",
+    "GPSE": "",
+    "Surname": "",
+    "GivenName": "",
+    "MiddleName": "",
+    "Confirmed": false,
+    "IsNonActualEmail": false,
+    "Completeness": 90,
+    "LanguageId": "00000000-0000-0000-0000-000000000000",
+    "Age": 0,
+    "IsEmailConfirmed": false
+}
+
+ */

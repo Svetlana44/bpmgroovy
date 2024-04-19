@@ -131,7 +131,7 @@ ERROR: Job failed (system failure): prepare environment: failed to start process
 
 ###
 
-### <ins>  Установка параметра trustServerCertificate в true  </ins>
+### <ins>  БД Установка параметра trustServerCertificate в true  </ins>
 
 Properties properties = new Properties();
 properties.setProperty("urlDB", "jdbc:sqlserver://1.1.1.1:
@@ -147,3 +147,29 @@ Connection connection = DriverManager.getConnection(
 properties.getProperty("urlDB"),
 properties.getProperty("userDB"),
 properties.getProperty("passwordDB"));
+
+### <ins> REST Assured  отключение проверки сертификатов HTTPS   </ins>
+
+Для отключения проверки сертификатов HTTPS в REST Assured можно использовать метод relaxedHTTPSValidation(). Этот метод
+позволяет игнорировать проверку сертификатов и продолжать работу без них. Пример использования:
+
+```java
+
+RestAssured.given()
+.
+
+relaxedHTTPSValidation()
+// Другие методы конфигурации
+.
+
+when()
+.
+
+get("https://example.com")
+.
+
+then()
+// Другие методы проверки ответа
+```
+
+Таким образом, REST Assured будет обходить проверку сертификатов и продолжать работу с HTTPS-сайтами без ошибок.
