@@ -1,20 +1,18 @@
-package utilies;
+package utilies.frame;
 
 import com.github.javafaker.Faker;
-import com.github.javaparser.utils.Log;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import responsparser.IDparser;
+import utilies.Auth;
 import version_1_3.api.jsonschemas.FullContact;
 import version_1_3.api.jsonschemas.IDContact;
 import version_1_3.api.jsonschemas.IDandNameContact;
-import version_1_3.api.models.Account;
 import version_1_3.api.models.Contact;
+import version_1_3.api.models.IDs;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -22,21 +20,28 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 
 public class ContactServiciesFrame {
+    private static final Random random = new Random();
+    static int randomNumber = Math.abs(random.nextInt(333));
     private static final Logger LOG = LoggerFactory.getLogger(ContactServiciesFrame.class.getName());
     private static final Faker faker = new Faker(new Locale("ru"));
-    private static final Random random = new Random();
+
     public static String IDandNameJsonSchema = IDandNameContact.IDandNameJsonSchema;
+    static IDs ids;
+    private static boolean flagGetIDs = false;
 
     public static void main(String[] args) {
         Auth auth = new Auth();
 //        auth.authHttpORHttps("urlframework");
 
         //     parsIdFromIdResponse(ContactServicies.getAllIdOfContacts(auth)).forEach(System.out::println);
-        ContactServiciesFrame.addRandomContact(auth, generateRandomFullContact(auth));
+        for (int i = 0; i < 10; i++) {
+            ContactServiciesFrame.addRandomContact(auth, generateRandomFullContact(auth, "urlframework"));
+        }
         //          ContactServicies.getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
         //      ContactServicies.getContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
         //    ContactServicies.deleteContacts(auth, "3b0160df-cb97-42df-aa40-419f49ae9053");
     }
+
 
     @Step("Генерация рандомного контакта")
     public static Contact generateRandomSimpleContact() {
@@ -49,25 +54,23 @@ public class ContactServiciesFrame {
     }
 
     @Step("Генерация рандомного Полного контакта")
-    public static Contact generateRandomFullContact(Auth auth) {
-        int randomNumber = Math.abs(random.nextInt(333));
+    /* нужно списки данных сделать общими на класс, чтобы быстрее делать несколько контактов  класс IDs при инициализации запрашивает IDs */
+    public static Contact generateRandomFullContact(Auth auth, String typeUrl) {
+        /*     List<String> ownerIDs = IDparser.parsIdFromIdResponseToList(getAllIdOfContacts(auth, "urlframework"));    */
 
-        List<String> ownerIDs = IDparser.parsIdFromIdResponseToList(getAllIdOfContacts(auth));
-        Log.info("Спарсили ownerIDs===========");
-        List<String> accountIDs = IDparser.parsIdFromIdResponseToList(Account.getAllIdOfAccountsFrame(auth));
-        Log.info("Спарсили accountIDs===========");
-        int randomNumberIdOwner = Math.abs(random.nextInt(ownerIDs.size() - 1));
-        System.out.println("OwnerIds=========" + ownerIDs.get(randomNumberIdOwner));
-        int randomNumberIdAccount = 0;
-        if (accountIDs.size() > 1) {
-            randomNumberIdAccount = Math.abs(random.nextInt(accountIDs.size() - 1));
+        if (!flagGetIDs) {
+            ids = new IDs(auth, typeUrl);
+            flagGetIDs = true;
         }
         String name = faker.name().fullName();
         return Contact.builder()
                 .name(name + randomNumber)
-                .ownerId(ownerIDs.get(randomNumberIdOwner))
-                .accountId(accountIDs.get(randomNumberIdAccount))
+                .ownerId(ids.ownerIDs.get(ids.randomNumberIdOwner))
+                .accountId(ids.accountIDs.get(ids.randomNumberIdAccount))
+                .typeId(ids.contactTypeIDs.get(ids.randomNumberIdContactType))
                 .email(name.replaceAll("\\s", "") + randomNumber + "@test.ru")
+                .mobilePhone(faker.phoneNumber().phoneNumber())
+                .countryId(ids.countryIDs.get(ids.randomNumberIdCountry))
                 .build();
     }
 
@@ -181,9 +184,9 @@ public class ContactServiciesFrame {
     }
 
     @Step("Получение ID всех контактов с проверкой соответствия json schema")
-    public static Response getAllIdOfContacts(Auth auth) {
-
-        auth.authHttpORHttps("urlframework");
+    public static Response getAllIdOfContacts(Auth auth, String typeUrl) {
+        /*  auth.authHttpORHttps("urlframework");  */
+        auth.authHttpORHttps(typeUrl);
         LOG.info("Получение ID всех контактов с проверкой соответствия json schema");
         return given()
                 .when()

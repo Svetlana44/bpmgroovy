@@ -5,12 +5,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utilies.Auth;
-import utilies.ContactServiciesFrame;
+import utilies.frame.ContactServiciesFrame;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static utilies.ContactServiciesFrame.IDandNameJsonSchema;
+import static utilies.frame.ContactServiciesFrame.IDandNameJsonSchema;
 
 /*  только для .NET   в пути есть нуль
 {{BaseURI}}/0/ServiceModel/EntityDataService.svc

@@ -43,8 +43,8 @@ public class AppErrorTest {
         }
         AtomicInteger i = new AtomicInteger();
         errors.forEach(e -> System.out.println(i.incrementAndGet() + ") " + e));
-//        System.out.println("Вывод списка пакетов:");
-//        packagies.forEach(e -> System.out.println(e));
+        System.out.println("Вывод списка пакетов:");
+        packagies.forEach(e -> System.out.println(e));
     }
 
     @Test

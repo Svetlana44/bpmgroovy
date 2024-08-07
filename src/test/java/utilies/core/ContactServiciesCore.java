@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import responsparser.IDparser;
 import utilies.Auth;
+import utilies.frame.AccountServiceFrame;
 import version_1_3.api.jsonschemas.FullContact;
 import version_1_3.api.jsonschemas.IDContact;
 import version_1_3.api.jsonschemas.IDandNameContact;
-import version_1_3.api.models.Account;
 import version_1_3.api.models.Contact;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public class ContactServiciesCore {
 
         List<String> ownerIDs = IDparser.parsIdFromIdResponseToList(ContactServiciesCore.getAllIdOfContacts(auth));
         Log.info("Спарсили ownerIDs===========");
-        List<String> accountIDs = IDparser.parsIdFromIdResponseToList(Account.getAllIdOfAccountsCore(auth));
+        List<String> accountIDs = IDparser.parsIdFromIdResponseToList(AccountServiceFrame.getAllIdOfAccountsCore(auth));
         Log.info("Спарсили accountIDs===========");
         int randomNumberIdOwner = Math.abs(random.nextInt(ownerIDs.size() - 1));
         System.out.println("OwnerIds=========" + ownerIDs.get(randomNumberIdOwner));

@@ -10,6 +10,15 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+
+    maven {
+        //       url "https://gitlab.com/api/v4/projects/<project_id>/packages/maven"
+        url "https://gitlab.com/api/v4/projects/bpmsoft/packagesinsidedb/packages/maven"
+        credentials(HttpHeaderCredentials) {
+            name = "Private-Token"
+            value = project.findProperty("gitlabPrivateToken") ?: ""
+        }
+    }
 }
 
 
@@ -87,6 +96,9 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.17.2'
 // https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc
     implementation 'com.microsoft.sqlserver:mssql-jdbc:12.6.1.jre11'
+    implementation 'org.postgresql:postgresql:42.2.5'
+
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 
 }
 
@@ -138,4 +150,14 @@ tasks.register("myTags", Test.class) {
         }
 
     }
+}
+
+/* код, который будет передавать свойство в Java приложение при его запуске.
+создает задачу runDownloader, которая запускает класс GitLabFileDownloader
+ и передает ему системное свойство gitlabPrivateToken.*/
+
+task runDownloader(type: JavaExec) {
+//    main = 'GitLabFileDownloader'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperty "gitlabPrivateToken", project.findProperty("gitlabPrivateToken") ?: ""
 }

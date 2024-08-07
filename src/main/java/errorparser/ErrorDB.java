@@ -80,7 +80,7 @@ public class ErrorDB {
     public List<ErrorModel> findLastErrors() {
         List<ErrorModel> errors = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(
-                statementsSQL.ssmsSELECTerrors
+                statementsSQL.postgreSELECTerrors
         )) {
             LOG.info("Запрос к БД.");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
