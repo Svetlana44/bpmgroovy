@@ -5,12 +5,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utilies.Auth;
-import utilies.frame.ContactServiciesFrame;
+import utilies.ContactServicies;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static utilies.frame.ContactServiciesFrame.IDandNameJsonSchema;
+import static utilies.ContactServicies.IDandNameJsonSchema;
 
 /*  только для .NET   в пути есть нуль
 {{BaseURI}}/0/ServiceModel/EntityDataService.svc
@@ -31,17 +31,17 @@ public class FrameODataTests {
                 .contentType(ContentType.JSON)
                 .get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
                 .then().assertThat().body(JsonSchemaValidator.matchesJsonSchema(schema));   */
-
+    String typeUrl = "urlframework";
 
     @Test
     public void authFrame() {
-        auth.authHttpORHttps("urlframework");
+        auth.authHttpORHttps(typeUrl);
     }
 
     /*   {{BaseURI}}/0/odata/{{CollectionName1}}   */
     @Test
     public void getObjectCollectionInstancesPositive() {
-        ContactServiciesFrame.getAllContacts(auth);
+        ContactServicies.getAllContacts(auth, typeUrl);
     }
 
     /*  {{BaseURI}}/0/odata/{{CollectionName1}}({{ObjectId1}})/{{FieldName1}}/$value
@@ -50,16 +50,18 @@ public class FrameODataTests {
      слово "value" не нужно ни чем заменять, писать как есть.   */
     @Test
     public void getNameOfContactById() {
-        String name = ContactServiciesFrame
-                .getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00")
+        String name = ContactServicies
+                .getNameOfContactById(auth, typeUrl, "410006e1-ca4e-4502-a9ec-e54d922d2c00")
                 .body().asPrettyString()
                 .replace("\uFEFF", "").replace("\u200B", "");
         Assertions.assertEquals("Supervisor", name);
+        /* не забыть обрезать пробел  (ZWNBSP)  str.replace("\uFEFF", "").replace("\u200B", "")
+                        , чтобы удалить все невидимые пробелы из ответа */
     }
 
     @Test
     public void getObjectCollectionInstancesSelectParametrsPositiveShema() {
-        auth.authHttpORHttps("urlframework");
+        auth.authHttpORHttps(typeUrl);
 
         Response responseGet =
                 given()
@@ -71,7 +73,7 @@ public class FrameODataTests {
 
                         .queryParam("$select", "Id,Name")
 
-                        .baseUri(auth.selectUrl("urlframework"))
+                        .baseUri(auth.selectUrl(typeUrl))
                         /*     .get("/0/odata/Contact?%24select=Id%2CName")  */
                         .get("/0/odata/Contact")
                         .then().log().all()
@@ -85,7 +87,7 @@ public class FrameODataTests {
     /* http://qa026wfmb.rnd.omnichannel.ru:8500/0/odata/Contact?$select=Id,Name&BPMCSRF={{BPMCSRF}}&ForceUseSession=true  */
     @Test
     public void getObjectCollectionInstancesSelectParametrsPositive() {
-        auth.authHttpORHttps("urlframework");
+        auth.authHttpORHttps(typeUrl);
 
         Response responseGet =
                 given()
@@ -97,7 +99,7 @@ public class FrameODataTests {
 
                         .queryParam("$select", "Id,Name")
 
-                        .baseUri(auth.selectUrl("urlframework"))
+                        .baseUri(auth.selectUrl(typeUrl))
                         /*     .get("/0/odata/Contact?%24select=Id%2CName")  */
                         .get("/0/odata/Contact")
                         .then().log().all()
@@ -116,12 +118,12 @@ public class FrameODataTests {
     post("http://{{BaseURL}}/0/odata/Contact")  */
     @Test
     public void postAddObjectCollectionInstanceContactPositive() {
-        Response response = ContactServiciesFrame.addRandomContact(auth, ContactServiciesFrame.generateRandomSimpleContact());
+        Response response = ContactServicies.addRandomContact(auth, typeUrl, ContactServicies.generateRandomSimpleContact());
         String id = response.path("Id");
         String name = response.path("Name");
         /* нужно проверить гетом, что есть контакт */
-        String actualName = ContactServiciesFrame
-                .getNameOfContactById(auth, id)
+        String actualName = ContactServicies
+                .getNameOfContactById(auth, typeUrl, id)
                 .body().asPrettyString()
                 .replace("\uFEFF", "").replace("\u200B", "");
         Assertions.assertEquals(name, actualName);
@@ -130,7 +132,7 @@ public class FrameODataTests {
     /*  {{BaseURI}}/0/odata/{{CollectionName1}}({{ObjectId1}})  */
     @Test
     public void patchModifyObjectCollectionInstanceContactPositive() {
-        Response response = ContactServiciesFrame.addRandomContact(auth, ContactServiciesFrame.generateRandomSimpleContact());
+        Response response = ContactServicies.addRandomContact(auth, typeUrl, ContactServicies.generateRandomSimpleContact());
 
         String id = response.path("Id");
         System.out.println("========" + id);
@@ -148,12 +150,12 @@ public class FrameODataTests {
                             "MobilePhone": "+7 999 123 1234"
                         }""")
 
-                .baseUri(auth.selectUrl("urlframework"))
+                .baseUri(auth.selectUrl(typeUrl))
                 .patch("/0/odata/Contact(" + id + ")")
                 .then().log().all()
                 .statusCode(204);
 
-        Response responseModify = ContactServiciesFrame.getContactById(auth, id);
+        Response responseModify = ContactServicies.getContactById(auth, typeUrl, id);
         Assertions.assertEquals("+7 999 123 1234", responseModify.path("MobilePhone"));
         /* .assertThat().body("MobilePhone", equalTo("+7 999 123 1234")) */
 
@@ -162,23 +164,22 @@ public class FrameODataTests {
     /* {{url}}/0/odata/Contact(410006e1-ca4e-4502-a9ec-e54d922d2c00) Supervisor */
     @Test
     public void deleteContactPositive() {
-        Response response = ContactServiciesFrame.addRandomContact(auth, ContactServiciesFrame.generateRandomSimpleContact());
+        Response response = ContactServicies.addRandomContact(auth, typeUrl, ContactServicies.generateRandomSimpleContact());
         String id = response.path("Id");
         String name = response.path("Name");
         /* нужно проверить гетом, что есть контакт */
-        String actualName = ContactServiciesFrame
-                .getNameOfContactById(auth, id)
+        String actualName = ContactServicies
+                .getNameOfContactById(auth, typeUrl, id)
                 .body().asPrettyString()
                 .replace("\uFEFF", "").replace("\u200B", "");
         Assertions.assertEquals(name, actualName);
         /* теперь само удаление */
-        ContactServiciesFrame.deleteContacts(auth, id);
-        Response responseDel = ContactServiciesFrame.getContactByIdNegative(auth, id);
+        ContactServicies.deleteContacts(auth, typeUrl, id);
+        Response responseDel = ContactServicies.getContactByIdNegative(auth, typeUrl, id);
         Assertions.assertEquals(404, responseDel.getStatusCode());
-        responseDel = ContactServiciesFrame.deleteContactNegative(auth, id);
+        responseDel = ContactServicies.deleteContactNegative(auth, typeUrl, id);
         Assertions.assertEquals(404, responseDel.getStatusCode());
         Assertions.assertEquals("Not found", responseDel.path(("error.message")));
-
     }
  /*   @Test
     public void simpleTest() {

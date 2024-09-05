@@ -1,4 +1,4 @@
-package utilies;
+package utilies.core;
 
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
@@ -18,13 +18,23 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
 @Data
-public class Auth {
-    private static final Logger LOG = LoggerFactory.getLogger(Auth.class.getName());
+public class AuthCore {
+    private static final Logger LOG = LoggerFactory.getLogger(AuthCore.class.getName());
     //    public String bpmcsrf; /* BPMCSRF cookie  response.cookie("BPMCSRF")  */
     public final String BPMSESSIONID = "v4fgnegnqqal2bashjkrbtjm";
     public String typeUrl;
     public Map<String, String> cookiesMap;
-    public String cookiesString;
+    public String cookiesStringCore;
+    AuthUser user;
+    String expected = """
+            {
+                "Code": 0,
+                "Message": "",
+                "Exception": null,
+                "PasswordChangeUrl": null,
+                "RedirectUrl": null
+            }
+            """;
     //    public String cookiesASPXAUTH;
 //    public String cookiesBPMLOADER;
 //    public String cookiesUserName;
@@ -36,19 +46,9 @@ public class Auth {
     private String urllinuxcore;
     private String body;
     private Properties properties = new Properties();
-    AuthUser user;
-    String expected = """
-            {
-                "Code": 0,
-                "Message": "",
-                "Exception": null,
-                "PasswordChangeUrl": null,
-                "RedirectUrl": null
-            }
-            """;
 
 
-    public Auth() {
+    public AuthCore() {
         this.authProperti();
         this.body = "{" +
                 "\"UserName\":\"" + login + "\"," +
@@ -62,11 +62,9 @@ public class Auth {
     }
 
     public static void main(String[] args) {
-        Auth auth = new Auth();
-        auth.authHttpORHttps("urlframework");
-        System.out.println("urlframework  auth.cookiesString):=======" + auth.cookiesString);
+        AuthCore auth = new AuthCore();
         auth.authHttpORHttps("urllinuxcore");
-        System.out.println("urllinuxcore auth.cookiesString):=======" + auth.cookiesString);
+        System.out.println("urllinuxcore auth.cookiesString):=======" + auth.cookiesStringCore);
 
         //       ContactServicies.getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
     }
@@ -126,7 +124,8 @@ public class Auth {
         cookiesMap = response.getCookies();
         cookiesMap.forEach((k, v) -> System.out.println(k + " :" + v));
         //       cookiesString = "BPMSESSIONID=" + BPMSESSIONID + "; .ASPXAUTH=" + cookiesMap.get(".ASPXAUTH") + "; BPMCSRF=" + cookiesMap.get("BPMCSRF") + "; BPMLOADER=" + cookiesMap.get("BPMLOADER") + "; UserName=" + cookiesMap.get("UserName");
-        cookiesString = "BPMSESSIONID=" + BPMSESSIONID + "; .ASPXAUTH=" + cookiesMap.get(".ASPXAUTH") + "; BPMCSRF=" + cookiesMap.get("BPMCSRF") + "; BPMLOADER=" + cookiesMap.get("BPMLOADER") + "; UserName=83|117|112|101|114|118|105|115|111|114";
+        //       cookiesStringFrame = "BPMSESSIONID=" + BPMSESSIONID + "; .ASPXAUTH=" + cookiesMap.get(".ASPXAUTH") + "; BPMCSRF=" + cookiesMap.get("BPMCSRF") + "; BPMLOADER=" + cookiesMap.get("BPMLOADER") + "; UserName=83|117|112|101|114|118|105|115|111|114";
+        cookiesStringCore = "BPMSESSIONID=" + BPMSESSIONID + "; .ASPXAUTH=" + cookiesMap.get(".ASPXAUTH") + "; BPMCSRF=" + cookiesMap.get("BPMCSRF") + "; CsrfToken=" + cookiesMap.get("CsrfToken");
 //
 //
 //        this.bpmcsrf = response.getCookie("BPMCSRF");

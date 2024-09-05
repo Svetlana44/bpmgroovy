@@ -11,10 +11,13 @@ import lombok.NoArgsConstructor;
 import java.util.Locale;
 import java.util.Random;
 
-/* Для того чтобы заменить пустое значение null на пустую строку в Lombok,
+/*
+Для того чтобы заменить пустое значение null на пустую строку в Lombok,
  можно использовать аннотацию @JsonInclude с параметром Include.NON_NULL.
   Добавьте аннотацию @JsonInclude(Include.NON_NULL) к вашему классу Contact,
-   и это позволит сериализатору Jackson исключать значения null при преобразовании объекта в JSON.  */
+   и это позволит сериализатору Jackson исключать значения null при преобразовании объекта в JSON.
+   Builder от ломбок для удобного построения объектов вместо get/set и присвоения значений
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -174,6 +177,7 @@ public class Contact {
 
     @JsonProperty("LanguageId")
     private String languageId;
+
     private static final Random random = new Random();
     private static final Faker faker = new Faker(new Locale("ru"));
 
