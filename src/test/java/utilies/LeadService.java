@@ -116,7 +116,7 @@ public class LeadService {
         return Lead.builder()
                 .account(account)
                 //      .contact(ids.contactIDs.get(ids.getRandomNumberId(ids.contactIDs)))  // из-за этого подвисает
-                .ownerId(ids.ownerIDs.get(ids.getRandomNumberId(ids.ownerIDs)))
+                //     .ownerId(ids.ownerIDs.get(ids.getRandomNumberId(ids.ownerIDs)))   //если это поле писать не null, задачи при МИСЛ переводе в др статус не создаются автоматом
                 .leadTypeId(leadType)
                 .leadTypeStatusId("5b3d1046-fc16-45c8-a5a1-298dfc857546")  //  Discovered
                 .qualifyStatusId("d790a45d-03ff-4ddb-9dea-8087722c582c")   //Квалификация
@@ -124,9 +124,10 @@ public class LeadService {
                 .salesChannelId("3c3865f2-ada4-480c-ac91-e2d39c5bbaf9")    //тоже непонятно, даже таблицы такой нет, но у всех лидов такой id
                 //         .leadName(leadType + " / " + account) // автоматом подставляется строка с конкатенацией
                 .showDistributionPage(true)
-                .businesPhone(faker.phoneNumber().phoneNumber())
-                .mobilePhone(faker.phoneNumber().phoneNumber())
-                .countryId(ids.countryIDs.get(ids.getRandomNumberId(ids.countryIDs)))
+                //     .businesPhone(faker.phoneNumber().phoneNumber())
+                //     .mobilePhone(faker.phoneNumber().phoneNumber())
+                //     .countryId(ids.countryIDs.get(ids.getRandomNumberId(ids.countryIDs)))
+                .createdById("c943b0df-5ce5-4d7a-a9d3-616035cec548")
                 .build();
     }
 
