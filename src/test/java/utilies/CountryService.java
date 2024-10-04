@@ -15,7 +15,7 @@ public class CountryService {
 
     //  AccountId
     @Step("Получение ID всех Стран с проверкой соответствия json schema")
-    public static Response getAllIdOfCountriesFrame(Auth auth, String typeUrl) {
+    public static Response getAllIdOfCountries(Auth auth, String typeUrl) {
         auth.authHttpORHttps(typeUrl);
         String requestPath = "/odata";
         if (typeUrl.equals("urlframework")) {
@@ -60,7 +60,7 @@ public class CountryService {
 
     public static void main(String[] args) {
         Auth auth = new Auth();
-        getAllIdOfCountriesFrame(auth, "urlframework");
+        getAllIdOfCountries(auth, "urlframework");
 
     }
 }

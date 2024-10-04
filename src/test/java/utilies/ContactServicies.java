@@ -29,14 +29,14 @@ public class ContactServicies {
     private static boolean flagGetIDs = false;
 
     public static void main(String[] args) {
-        Auth auth = new Auth();
+        Auth auth1 = new Auth();
+        Auth auth2 = new Auth();
 //        auth.authHttpORHttps("urlframework");
-
 //             getAllIdOfContacts(auth,"urlframework");
 
         for (int i = 0; i < 1; i++) {
-            ContactServicies.addRandomContact(auth, "urlframework", generateRandomFullContact(auth, "urlframework"));
-            //    ContactServicies.addRandomContact(auth, "urllinuxcore", generateRandomFullContact(auth, "urllinuxcore"));
+            //         ContactServicies.addRandomContact(auth1, "urlframework", generateRandomFullContact(auth1, "urlframework"));
+            ContactServicies.addRandomContact(auth2, "urlwincore", generateRandomFullContact(auth2, "urlwincore"));
         }
         //          ContactServicies.getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
         //      ContactServicies.getContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
@@ -77,6 +77,7 @@ public class ContactServicies {
     public static Response addRandomContact(Auth auth, String typeUrl, Contact contact) {
         //      auth.authHttpORHttps("urlwincore");
         //      auth.authHttpORHttps("urlframework");
+
         auth.authHttpORHttps(typeUrl);
         String requestPath = "/odata";
         if (typeUrl.equals("urlframework")) {
@@ -87,7 +88,7 @@ public class ContactServicies {
         return given()
                 .relaxedHTTPSValidation()  //отключение проверки сертификатов https
                 .when()
-                //   .header("ForceUseSession", "true")
+                .header("ForceUseSession", "true")
                 //            .header("Accept", "application/json;odata=verbose")
                 .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
                 .header("Cookie", auth.cookiesString)

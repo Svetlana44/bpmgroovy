@@ -76,7 +76,7 @@ public class ContactServiciesCore {
     public static Response
     addRandomContact(AuthCore auth, Contact contact) {
         String typeUrl = "urllinuxcore";
-        //    Response authResponse =
+        Response authResponse =
         auth.authHttpORHttps(typeUrl);
         //       System.out.println("+++++++++++++++++++++authResponse.getBody().asString()++++++++++++++++++++++++++++++++++++++++++++" + authResponse.getBody().asString());
         System.out.println(auth.selectUrl(typeUrl) + "/odata/Contact");
@@ -84,6 +84,7 @@ public class ContactServiciesCore {
         //      auth.authHttpORHttps("urllinuxcore");
         //      auth.authHttpORHttps("urlframework");
 
+        System.out.println("+++++cookie" + authResponse.cookies());
         String requestPath = "/odata";
         if (typeUrl.equals("urlframework")) {
             requestPath = "/0" + requestPath;

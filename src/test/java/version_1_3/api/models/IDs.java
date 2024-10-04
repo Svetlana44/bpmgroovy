@@ -18,6 +18,8 @@ public class IDs {
     public List<String> contactIDs;
     public List<String> contactTypeIDs;
     public List<String> accountTypeIDs;
+    public List<String> leadTypeIDs;
+
     public Auth auth;
     public String typeUrl;
 
@@ -30,7 +32,7 @@ public class IDs {
         Log.info("Спарсили ownerIDs===========");
         //System.out.println("System.out.println: OwnerIds=========" + ownerIDs.get(randomNumberIdOwner));
 
-        countryIDs = IDparser.parsIdFromIdResponseToList(CountryService.getAllIdOfCountriesFrame(auth, typeUrl));
+        countryIDs = IDparser.parsIdFromIdResponseToList(CountryService.getAllIdOfCountries(auth, typeUrl));
         Log.info("Спарсили countryIDs===========");
         //  System.out.println("System.out.println: countryIDs=========" + countryIDs.get(randomNumberIdCountry));
 
@@ -46,6 +48,9 @@ public class IDs {
 
         accountTypeIDs = IDparser.parsIdFromIdResponseToList(AccountService.getAllIdOfAccountsTypeFrame(auth, typeUrl));
         Log.info("Спарсили accountTypeIDs===========");
+
+        leadTypeIDs = IDparser.parsIdFromIdResponseToList(LeadService.getAllIdOfLeadType(auth, typeUrl));
+        Log.info("Спарсили leadTypeIDs===========");
     }
 
     public int getRandomNumberId(List<String> IDsList) {
