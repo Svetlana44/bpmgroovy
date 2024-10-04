@@ -120,6 +120,13 @@ public class LeadService {
                 .leadTypeId(leadType)
                 .leadTypeStatusId("5b3d1046-fc16-45c8-a5a1-298dfc857546")  //  Discovered
                 .qualifyStatusId("d790a45d-03ff-4ddb-9dea-8087722c582c")   //Квалификация
+                /* с этим статусом нужно уточнить поля в БД
+                при переводе в продажу, создаётся контрагент из названия контрагента в лиде
+                и в БД заполняется поле "QualifiedAccountId" этим Контрагентом из таблицы Account
+                + заполняется "QualificationProcessId" ни с чем не связан в БД, просто id
+                + "QualificationPassed"  становится true
+                т.е. создаётся контрагент из лида и три поля в БД меняются */
+                //    .qualifyStatusId("ceb70b3c-985f-4867-ae7c-88f9dd710688") //  Перевод в продажу с этим статусом нужно уточнить поля в БД Перевод в продажу   ceb70b3c-985f-4867-ae7c-88f9dd710688
                 .registerMethodId("240ab9c6-4d7c-4688-b380-af44dd147d7a")  //неизвестный id у всех вручную созданных
                 .salesChannelId("3c3865f2-ada4-480c-ac91-e2d39c5bbaf9")    //тоже непонятно, даже таблицы такой нет, но у всех лидов такой id
                 //         .leadName(leadType + " / " + account) // автоматом подставляется строка с конкатенацией
@@ -190,7 +197,7 @@ public class LeadService {
         //       getLeadById(auth, "urlwincore", "aed07d10-ad1a-45e3-a95c-8d1715cb7569");
         //       getAllIdOfLeadType(auth, "urlwincore");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
             addRandomLead(auth, "urlwincore", generateRandomFullLead(auth, "urlwincore"));
             //    addRandomAccount(auth, "urllinuxcore", generateRandomFullAccount(auth, "urllinuxcore"));
         }
