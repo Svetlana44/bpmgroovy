@@ -1,4 +1,4 @@
-package testpack;
+package trany.testpack;
 
 import org.junit.jupiter.api.BeforeEach;
 

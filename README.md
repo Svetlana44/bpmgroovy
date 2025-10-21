@@ -186,3 +186,109 @@ then()
 ```
 
 Таким образом, REST Assured будет обходить проверку сертификатов и продолжать работу с HTTPS-сайтами без ошибок.
+
+### Выборочный запуск тестов gradle
+
+тут для русских букв в консоли
+разделитель двух команд точка с запятой, можно | или ентер
+
+```shell
+chcp 65001
+```
+
+сразу установка русских букв и запуск выборочно тестов
+
+```java
+chcp 65001;  ./gradlew clean test --tests trany.TranyTests
+
+```
+
+Если Gradle установлен непосредственно в среде разработки IntelliJ IDEA, то скорее всего вы используете Gradle Wrapper.
+gradle это прямая команда, и нужно, чтобы gradle был установлен не как обёртка в IDE.
+
+```java
+gradle clean test --tests trany.TranyTests
+```
+
+#### по тегам, @Tag"name" + см. build.gradle файл, таску myTags и customTags
+
+```java
+ ./gradlew clean myTags -x test -DcustomTags=Jackson
+```
+
+```groovy
+tasks.register("myTags", Test.class) {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    useJUnitPlatform()
+    systemProperty "file.encoding", "utf-8"
+    String fullTags = System.getProperty("customTags")
+    if (fullTags != null) {
+        String[] tags = fullTags.split(",")
+        useJUnitPlatform {
+            for (String tag : tags) {
+                includeTags.add(tag)
+            }
+        }
+
+    }
+```
+
+### ./gradlew -version
+
+```java
+echo %JAVA_HOME%
+where java
+gradlew -version
+```
+
+### файл gradle.properties
+
+#### Указываем конкретную JDK для Gradle
+
+org.gradle.java.home=C:\\Program Files\\Java\\jdk-17
+
+#### Настройки консоли (чтобы корректно отображалась кириллица)
+
+```java
+org.gradle.console=plain
+org.gradle.logging.level=info
+```
+
+#### Принудительно UTF-8 для JVM
+
+```java
+org.gradle.jvmargs=-Dfile.encoding=UTF-8
+```
+
+-----
+Убиваем старые демоны Gradle
+
+```java
+.\gradlew --stop
+
+```
+
+Проверяем, что gradle.properties корректен
+
+Файл:
+C:\projects\bpmgroovy\gradle.properties
+
+должен содержать строку в одну линию:
+
+```java
+org.gradle.java.home=C:\\Program Files\\JetBrains\\IntelliJ IDEA Community Edition 2023.3.4\\jbr
+
+```
+
+⚠️ Никаких # комментариев перед этой строкой — иначе Gradle проигнорирует.
+
+#### В IntelliJ проверь:
+
+File → Settings → Build, Execution, Deployment → Build Tools → Gradle
+
+✅ Build and run using → Gradle
+✅ Run tests using → Gradle
+✅ Gradle JVM → JetBrains Runtime 17 (путь на ...jbr)
+✅ Gradle Distribution → Use gradle-wrapper.properties

@@ -180,9 +180,9 @@ public class AccountService {
         //  getAccountByIdFrame(auth, "E308B781-3C5B-4ECB-89EF-5C1ED4DA488E");
 //        getAllIdOfAccountsTypeFrame(auth);
 
-        for (int i = 0; i < 10; i++) {
-            addRandomAccount(auth, "urlwincore", generateRandomFullAccount(auth, "urlwincore"));
-            //    addRandomAccount(auth, "urllinuxcore", generateRandomFullAccount(auth, "urllinuxcore"));
+        for (int i = 0; i < 13; i++) {
+            addRandomAccount(auth, "urllinuxcore", generateRandomFullAccount(auth, "urllinuxcore"));
+            //        addRandomAccount(auth, "urlframework", generateRandomFullAccount(auth, "urlframework"));
         }
     }
 }
