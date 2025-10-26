@@ -1,15 +1,15 @@
 package utilies;
 
+import api.jsonschemas.FullLead;
+import api.jsonschemas.IDContact;
+import api.models.IDs;
+import api.models.Lead;
 import com.github.javafaker.Faker;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import version_1_3.api.jsonschemas.FullLead;
-import version_1_3.api.jsonschemas.IDContact;
-import version_1_3.api.models.IDs;
-import version_1_3.api.models.Lead;
 
 import java.math.BigDecimal;
 import java.util.Locale;

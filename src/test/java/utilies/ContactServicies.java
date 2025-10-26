@@ -1,16 +1,16 @@
 package utilies;
 
+import api.jsonschemas.FullContact;
+import api.jsonschemas.IDContact;
+import api.jsonschemas.IDandNameContact;
+import api.models.Contact;
+import api.models.IDs;
 import com.github.javafaker.Faker;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import version_1_3.api.jsonschemas.FullContact;
-import version_1_3.api.jsonschemas.IDContact;
-import version_1_3.api.jsonschemas.IDandNameContact;
-import version_1_3.api.models.Contact;
-import version_1_3.api.models.IDs;
 
 import java.util.Locale;
 import java.util.Random;

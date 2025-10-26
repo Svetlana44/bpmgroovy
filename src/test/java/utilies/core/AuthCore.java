@@ -1,12 +1,12 @@
 package utilies.core;
 
+import api.models.AuthUser;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import version_1_3.api.models.AuthUser;
-import version_1_3.ui.selenide.pages.AuthPageSelenide;
+import ui.selenide.pages.AuthPageSelenide;
 
 import java.io.IOException;
 import java.io.InputStream;

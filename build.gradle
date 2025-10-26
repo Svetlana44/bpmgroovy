@@ -95,7 +95,7 @@ dependencies {
     /* testRuntimeOnly not testImplementation 'org.slf4j:slf4j-log4j12:1.7.30'  */
     implementation 'org.slf4j:slf4j-log4j12:2.0.9'
     /* читалка для файлов microsoft, в т.ч. и xls библиотека + схема( не для selenide)
-    * Java API To Access Microsoft Format Files*/
+    * Java api To Access Microsoft Format Files*/
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 /*  для скриншотов  */
@@ -144,7 +144,7 @@ test {
 /* в тасках можно писать задачи, которые нужно выполнить ч/з градл  */
 /*  для запуска тестов по тэгам, регистрируем задачу для класса
   запуск тестов происходит через эту команду для Junit5
- ./gradlew clean myTags -x test -DcustomTags="UI,API"  */
+ ./gradlew clean myTags -x test -DcustomTags="UI,api"  */
 tasks.register("myTags", Test.class) {
     testLogging {
         events "passed", "skipped", "failed"

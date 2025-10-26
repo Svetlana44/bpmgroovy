@@ -1,12 +1,11 @@
 package utilies;
 
+import api.models.AuthUser;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import version_1_3.api.models.AuthUser;
-import version_1_3.ui.selenide.pages.AuthPageSelenide;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,8 +64,8 @@ public class Auth {
         Auth auth = new Auth();
         auth.authHttpORHttps("urlframework");
         System.out.println("urlframework  auth.cookiesString):=======" + auth.cookiesString);
-        auth.authHttpORHttps("urllinuxcore");
-        System.out.println("urllinuxcore auth.cookiesString):=======" + auth.cookiesString);
+//        auth.authHttpORHttps("urllinuxcore");
+//        System.out.println("urllinuxcore auth.cookiesString):=======" + auth.cookiesString);
 
         //       ContactServicies.getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
     }
@@ -74,7 +73,8 @@ public class Auth {
     @Step("Загрузка stands.properties")
     public void authProperti() {
 
-        try (InputStream in = AuthPageSelenide.class.getClassLoader().getResourceAsStream("configs/stands.properties")) {
+        //    try (InputStream in = AuthPageSelenide.class.getClassLoader().getResourceAsStream("configs/stands.properties")) {
+        try (InputStream in = Auth.class.getClassLoader().getResourceAsStream("configs/stands.properties")) {
             properties.load(in);
             this.login = properties.getProperty("login");
             this.pass = properties.getProperty("password");
