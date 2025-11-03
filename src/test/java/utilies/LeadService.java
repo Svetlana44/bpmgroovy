@@ -1,16 +1,17 @@
 package utilies;
 
+import api.jsonschemas.FullLead;
+import api.jsonschemas.IDContact;
+import api.models.IDs;
+import api.models.Lead;
 import com.github.javafaker.Faker;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import version_1_3.api.jsonschemas.FullLead;
-import version_1_3.api.jsonschemas.IDContact;
-import version_1_3.api.models.IDs;
-import version_1_3.api.models.Lead;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Random;
 
@@ -135,6 +136,7 @@ public class LeadService {
                 //     .mobilePhone(faker.phoneNumber().phoneNumber())
                 //     .countryId(ids.countryIDs.get(ids.getRandomNumberId(ids.countryIDs)))
                 .createdById("c943b0df-5ce5-4d7a-a9d3-616035cec548")
+                .budget(new BigDecimal("333.00"))  //   Бюджет
                 .build();
     }
 
@@ -197,7 +199,7 @@ public class LeadService {
         //       getLeadById(auth, "urlwincore", "aed07d10-ad1a-45e3-a95c-8d1715cb7569");
         //       getAllIdOfLeadType(auth, "urlwincore");
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 6; i++) {
             addRandomLead(auth, "urlwincore", generateRandomFullLead(auth, "urlwincore"));
             //    addRandomAccount(auth, "urllinuxcore", generateRandomFullAccount(auth, "urllinuxcore"));
         }

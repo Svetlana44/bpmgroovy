@@ -1,7 +1,8 @@
 plugins {
     id 'groovy'
     id 'java'
-    id("io.freefair.lombok") version "8.0.1"
+//    id("io.freefair.lombok") version "8.0.1"
+    id("io.freefair.lombok") version "8.10.2"
     id "io.qameta.allure" version "2.11.2"
 }
 
@@ -29,12 +30,22 @@ compileJava.options.encoding = 'UTF-8'
 //     options.encoding = 'UTF-8'
 //
 //}
-compileJava {
-//    options.encoding = 'UTF-8'
-}
-compileTestJava {
+/*
+Если хочешь, чтобы кириллица корректно отображалась и в терминале, и в Allure отчётах, то:
+для Gradle-тасков достаточно options.encoding = 'UTF-8',
+для тестов важно добавить systemProperty "file.encoding", "UTF-8" (чтобы JVM передавала правильную кодировку).*/
+compileTestJava.
+        options.encoding = 'UTF-8'
+
+//это новое, см внимательно! не с (compileJava), а JavaCompile
+/* withType() принимает класс типа задачи (например, JavaCompile, Test, Jar, и т.д.), а не конкретную задачу.
+В твоём коде ты написал tasks.withType(compileJava), но compileJava — это экземпляр задачи, а не тип.
+ты вызываешь tasks.withType() не с типом задачи, а с самой задачей (compileJava), что неправильно.
+*/
+tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
+
 
 tasks.withType(Test) {
     systemProperty "file.encoding", "UTF-8"
@@ -66,7 +77,7 @@ dependencies {
     implementation 'com.github.javafaker:javafaker:1.0.2'
     implementation 'org.assertj:assertj-core:3.25.3'
 // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
-    implementation 'org.seleniumhq.selenium:selenium-java:4.17.0'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
     /* если есть селенид, можно не ставить селениум-он внутри селенида уже есть */
     implementation 'com.codeborne:selenide:7.2.2'
 
@@ -84,7 +95,7 @@ dependencies {
     /* testRuntimeOnly not testImplementation 'org.slf4j:slf4j-log4j12:1.7.30'  */
     implementation 'org.slf4j:slf4j-log4j12:2.0.9'
     /* читалка для файлов microsoft, в т.ч. и xls библиотека + схема( не для selenide)
-    * Java API To Access Microsoft Format Files*/
+    * Java api To Access Microsoft Format Files*/
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 /*  для скриншотов  */
@@ -133,7 +144,7 @@ test {
 /* в тасках можно писать задачи, которые нужно выполнить ч/з градл  */
 /*  для запуска тестов по тэгам, регистрируем задачу для класса
   запуск тестов происходит через эту команду для Junit5
- ./gradlew clean myTags -x test -DcustomTags="UI,API"  */
+ ./gradlew clean myTags -x test -DcustomTags="UI,api"  */
 tasks.register("myTags", Test.class) {
     testLogging {
         events "passed", "skipped", "failed"

@@ -1,11 +1,11 @@
 package utilies;
 
+import api.jsonschemas.IDContactType;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import version_1_3.api.jsonschemas.IDContactType;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;

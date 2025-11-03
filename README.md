@@ -51,7 +51,7 @@ JsonSchema в RestAssured - это инструмент, позволяющий 
 JSON-схема определяет ожидаемую структуру данных в JSON-ответе, включая типы данных,
 обязательные и дополнительные поля, ограничения на значения и другие правила.
 RestAssured позволяет использовать JSON-схему для автоматической проверки соответствия JSON-ответа этой схеме,
-что помогает обеспечить правильность данных, возвращаемых из API.
+что помогает обеспечить правильность данных, возвращаемых из api.
 // https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator
 implementation 'io.rest-assured:json-schema-validator:5.4.0'
 
@@ -186,3 +186,126 @@ then()
 ```
 
 Таким образом, REST Assured будет обходить проверку сертификатов и продолжать работу с HTTPS-сайтами без ошибок.
+
+### Выборочный запуск тестов gradle
+
+тут для русских букв в консоли
+разделитель двух команд точка с запятой, можно | или ентер
+
+```shell
+chcp 65001
+```
+
+сразу установка русских букв и запуск выборочно тестов
+
+```java
+chcp 65001;./
+gradlew clean
+test --
+tests trany.testpack.TranyTests
+
+```
+
+Если Gradle установлен непосредственно в среде разработки IntelliJ IDEA, то скорее всего вы используете Gradle Wrapper.
+gradle это прямая команда, и нужно, чтобы gradle был установлен не как обёртка в IDE.
+
+```java
+gradle clean
+test --
+tests trany.testpack.TranyTests
+```
+
+#### по тегам, @Tag"name" + см. build.gradle файл, таску myTags и customTags
+
+```java
+ ./gradlew clean myTags -x test -DcustomTags=Jackson
+```
+
+```groovy
+tasks.register("myTags", Test.class) {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    useJUnitPlatform()
+    systemProperty "file.encoding", "utf-8"
+    String fullTags = System.getProperty("customTags")
+    if (fullTags != null) {
+        String[] tags = fullTags.split(",")
+        useJUnitPlatform {
+            for (String tag : tags) {
+                includeTags.add(tag)
+            }
+        }
+
+    }
+```
+
+### ./gradlew -version
+
+```java
+echo %JAVA_HOME%
+where java
+gradlew -version
+```
+
+### файл gradle.properties
+
+#### Указываем конкретную JDK для Gradle
+
+org.gradle.java.home=C:\\Program Files\\Java\\jdk-17
+
+#### Настройки консоли (чтобы корректно отображалась кириллица)
+
+```java
+org.gradle.console=plain
+org.gradle.logging.level=info
+```
+
+#### Принудительно UTF-8 для JVM
+
+```java
+org.gradle.jvmargs=-Dfile.encoding=UTF-8
+```
+
+-----
+Убиваем старые демоны Gradle
+
+```java
+.\gradlew --stop
+
+```
+
+Проверяем, что gradle.properties корректен
+
+Файл:
+C:\projects\bpmgroovy\gradle.properties
+
+должен содержать строку в одну линию:
+
+```java
+org.gradle.java.home=C:\\Program Files\\JetBrains\\IntelliJ IDEA Community Edition 2023.3.4\\jbr
+
+```
+
+⚠️ Никаких # комментариев перед этой строкой — иначе Gradle проигнорирует.
+
+#### В IntelliJ проверь:
+
+File → Settings → Build, Execution, Deployment → Build Tools → Gradle
+
+✅ Build and run using → Gradle
+✅ Run tests using → Gradle
+✅ Gradle JVM → JetBrains Runtime 17 (путь на ...jbr)
+✅ Gradle Distribution → Use gradle-wrapper.properties
+
+### Создание пользователя монолита.
+
+#### jsonObject должен быть строкой, поэтому нужно экранирование в теле запроса
+
+```java
+{"jsonObject":"{\"Id\":\"d0d5b229-1778-4e85-9c51-fd5d39399195\",\"CreatedBy\":\"410006e1-ca4e-4502-a9ec-e54d922d2c00\",\"ModifiedBy\":\"410006e1-ca4e-4502-a9ec-e54d922d2c00\",\"Name\":\"SVETuser3260\",\"SysAdminUnitType\":\"472e97c7-6bd7-df11-9b2a-001d60e938c6\",\"Contact\":\"f7aac61b-28fb-448c-86f1-f2a4a99c8cbb\",\"TimeZone\":null,\"UserPassword\":\"SVETuser3260!\",\"Active\":true,\"SynchronizeWithLDAP\":false,\"SysCulture\":\"1a778e3f-0a8e-e111-84a3-00155d054c03\",\"ConnectionType\":0,\"LDAPElement\":null,\"UserConnectionType\":\"df8ff7a2-c9bf-4f28-80b1-ed16fa77818d\"}","roleId":"a29a3ba5-4b0d-de11-9a51-005056c00008"}
+```
+
+```html
+https://alcm-bpms-005.bpmrnd.ru/0/rest/AdministrationService/UpdateOrCreateUser
+```

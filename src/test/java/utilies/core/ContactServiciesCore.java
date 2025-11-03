@@ -1,5 +1,9 @@
 package utilies.core;
 
+import api.jsonschemas.FullContact;
+import api.jsonschemas.IDContact;
+import api.jsonschemas.IDandNameContact;
+import api.models.Contact;
 import com.github.javafaker.Faker;
 import com.github.javaparser.utils.Log;
 import io.qameta.allure.Step;
@@ -9,10 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import responsparser.IDparser;
 import utilies.Auth;
-import version_1_3.api.jsonschemas.FullContact;
-import version_1_3.api.jsonschemas.IDContact;
-import version_1_3.api.jsonschemas.IDandNameContact;
-import version_1_3.api.models.Contact;
 
 import java.util.List;
 import java.util.Locale;

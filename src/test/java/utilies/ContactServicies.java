@@ -1,16 +1,16 @@
 package utilies;
 
+import api.jsonschemas.FullContact;
+import api.jsonschemas.IDContact;
+import api.jsonschemas.IDandNameContact;
+import api.models.Contact;
+import api.models.IDs;
 import com.github.javafaker.Faker;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import version_1_3.api.jsonschemas.FullContact;
-import version_1_3.api.jsonschemas.IDContact;
-import version_1_3.api.jsonschemas.IDandNameContact;
-import version_1_3.api.models.Contact;
-import version_1_3.api.models.IDs;
 
 import java.util.Locale;
 import java.util.Random;
@@ -29,16 +29,20 @@ public class ContactServicies {
     private static boolean flagGetIDs = false;
 
     public static void main(String[] args) {
-        Auth auth1 = new Auth();
+        //      Auth auth1 = new Auth();
         Auth auth2 = new Auth();
 //        auth.authHttpORHttps("urlframework");
 //             getAllIdOfContacts(auth,"urlframework");
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 3; i++) {
             //         ContactServicies.addRandomContact(auth1, "urlframework", generateRandomFullContact(auth1, "urlframework"));
-            ContactServicies.addRandomContact(auth2, "urlwincore", generateRandomFullContact(auth2, "urlwincore"));
+            ContactServicies.addRandomContact(auth2, "urllinuxcore", generateRandomFullContact(auth2, "urllinuxcore"));
+            //   ContactServicies.addRandomContact(auth2, "urlframework", generateRandomFullContact(auth2, "urlframework"));
+            //    ContactServicies.addRandomContact(auth2, "urllinuxcore", generateRandomSimpleContact());
         }
         //          ContactServicies.getNameOfContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
+        //          ContactServicies.getNameOfContactById(auth2,"urllinuxcore", "410006e1-ca4e-4502-a9ec-e54d922d2c00");
+        //getNameOfContactById(Auth auth, String typeUrl, String id)
         //      ContactServicies.getContactById(auth, "410006e1-ca4e-4502-a9ec-e54d922d2c00");
         //    ContactServicies.deleteContacts(auth, "3b0160df-cb97-42df-aa40-419f49ae9053");
     }
@@ -67,7 +71,7 @@ public class ContactServicies {
                 .ownerId(ids.ownerIDs.get(ids.getRandomNumberId(ids.ownerIDs)))
                 .accountId(ids.accountIDs.get(ids.getRandomNumberId(ids.accountIDs)))
                 .typeId(ids.contactTypeIDs.get(ids.getRandomNumberId(ids.contactTypeIDs)))
-                .email(name.replaceAll("\\s", "") + randomNumber + "@test.ru")
+                //       .email(name.replaceAll("\\s", "") + randomNumber + "@test.ru")
                 .mobilePhone(faker.phoneNumber().phoneNumber())
                 .countryId(ids.countryIDs.get(ids.getRandomNumberId(ids.countryIDs)))
                 .build();
