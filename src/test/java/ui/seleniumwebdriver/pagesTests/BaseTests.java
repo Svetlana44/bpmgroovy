@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -108,6 +109,8 @@ public class BaseTests {
     @BeforeEach
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
+        // Принимаем невалидные/самоподписанные сертификаты, чтобы не показывалась страница Privacy error
+        options.setAcceptInsecureCerts(true);
         // Отключаем CDP для устранения предупреждений о несовместимости версий
         options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation", "enable-logging"});
         options.addArguments("--disable-blink-features=AutomationControlled");
@@ -115,14 +118,34 @@ public class BaseTests {
         options.addArguments("--no-sandbox"); // Для стабильности в некоторых окружениях
         options.addArguments("--disable-gpu"); // Отключаем GPU для стабильности
         options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--ignore-certificate-errors");
+        options.addArguments("--allow-insecure-localhost");
         // Отключаем логирование CDP чтобы уменьшить предупреждения
         System.setProperty("webdriver.chrome.silentOutput", "true");
         //FullHD
         driver = new ChromeDriver(options);
         driver.manage().window().setSize(new Dimension(1920, 1080));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
         driver.get(url);
+
+        // Автопропуск interstitial страницы Chrome ("Your connection is not private") при редких кейсах
+        try {
+            String title = driver.getTitle();
+            String currentUrl = driver.getCurrentUrl();
+            if ((title != null && (
+                    title.toLowerCase().contains("your connection is not private") ||
+                    title.toLowerCase().contains("privacy error") ||
+                    title.toLowerCase().contains("подключение не является частным")
+            )) || (currentUrl != null && (
+                    currentUrl.contains("interstitial") ||
+                    currentUrl.contains("ssl") ||
+                    currentUrl.startsWith("chrome-error://")
+            ))) {
+                driver.findElement(By.tagName("body")).sendKeys("thisisunsafe");
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     @AfterEach

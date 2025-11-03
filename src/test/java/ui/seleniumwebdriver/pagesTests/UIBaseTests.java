@@ -10,6 +10,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import listener.CustomTpl;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -65,6 +66,8 @@ public abstract class UIBaseTests {
             default:
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions options = new ChromeOptions();
+                // Принимаем невалидные/самоподписанные сертификаты
+                options.setAcceptInsecureCerts(true);
                 // Отключаем CDP и уменьшаем предупреждения о несовместимости версий
                 options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation", "enable-logging"});
                 options.addArguments("--disable-blink-features=AutomationControlled");
@@ -73,6 +76,8 @@ public abstract class UIBaseTests {
                 options.addArguments("--disable-gpu"); // Отключаем GPU для стабильности
                 options.addArguments("--start-maximized");
                 options.addArguments("--remote-allow-origins=*");
+                options.addArguments("--ignore-certificate-errors");
+                options.addArguments("--allow-insecure-localhost");
                 // Отключаем логирование CDP чтобы уменьшить предупреждения
                 System.setProperty("webdriver.chrome.silentOutput", "true");
                 driver = new ChromeDriver(options);
@@ -136,6 +141,23 @@ public abstract class UIBaseTests {
         wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         // Открываем страницу перед каждым тестом
         driver.get(url);
+        // Автопропуск interstitial страницы Chrome ("Your connection is not private") при редких кейсах
+        try {
+            String title = driver.getTitle();
+            String currentUrl = driver.getCurrentUrl();
+            if ((title != null && (
+                    title.toLowerCase().contains("your connection is not private") ||
+                    title.toLowerCase().contains("privacy error") ||
+                    title.toLowerCase().contains("подключение не является частным")
+            )) || (currentUrl != null && (
+                    currentUrl.contains("interstitial") ||
+                    currentUrl.contains("ssl") ||
+                    currentUrl.startsWith("chrome-error://")
+            ))) {
+                driver.findElement(By.tagName("body")).sendKeys("thisisunsafe");
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     @AfterEach
