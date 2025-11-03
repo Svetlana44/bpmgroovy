@@ -8,6 +8,7 @@ public class AuthPageTests extends BaseTests {
     public void authOnStartPage() {
         /*  driver описан в базовом классе */
         AuthPage authPage = new AuthPage(driver);
-        authPage.authBasic();
+        LOG.info("авторизация по кредам");
+        authPage.authBasic(loginSupervisor, passSupervisor);
     }
 }

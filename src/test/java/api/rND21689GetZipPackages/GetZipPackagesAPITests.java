@@ -1,17 +1,14 @@
 package api.rND21689GetZipPackages;
 
 import api.rND21689GetZipPackages.models.User;
+import enams.Platform;
 import io.qameta.allure.Step;
-import io.restassured.RestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
-import listener.CustomTpl;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ui.seleniumwebdriver.pagesTests.BaseTests;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,18 +20,20 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
-public class GetZipPackagesAPITests {
+public class GetZipPackagesAPITests extends BaseTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetZipPackagesAPITests.class.getName());
-    public static User supervisor1;
-    public static User svetuser2;
-    public static String url = "https://alcm-bpms-005.bpmrnd.ru";
-    public static String port = "5002";
+    public final String BPMSESSIONID = "v4fgnegnqqal2bashjkrbtjm";
+    Platform platform;
+    String platformStr;
+
     public String cookiesString;
     public Map<String, String> cookiesMap;
     public String GetZipPackages = "/ServiceModel/PackageInstallerService.svc/GetZipPackages";
     public String PKGName = "[\"Custom\"]";
     public String bpmcsrf;
+    String cookiesStringCore;
+    String cookiesStringFrame;
     String expected = """
             {
                 "Code": 0,
@@ -44,17 +43,17 @@ public class GetZipPackagesAPITests {
                 "RedirectUrl": null
             }
             """;
-    private String body;
 
-    @Step(".isCanManageSolution(false) носит информативный характер, и не применён в коде")
-    @BeforeAll
-    public static void setUp() {
-     /*   RestAssured.filters(
-                new RequestLoggingFilter()
-                , new ResponseLoggingFilter()
-                , new AllureRestAssured());*/
-        //Кастомный логер Aluure. статичный - см третий в списке.
-        RestAssured.filters(
+    /*
+        @Step(".isCanManageSolution(false) носит информативный характер, и не применён в коде")
+        @BeforeAll
+        public static void setUp() {
+         /*   RestAssured.filters(
+                    new RequestLoggingFilter()
+                    , new ResponseLoggingFilter()
+                    , new AllureRestAssured());*/
+    //Кастомный логер Aluure. статичный - см третий в списке.
+ /*       RestAssured.filters(
                 new RequestLoggingFilter()
                 , new ResponseLoggingFilter()
                 , CustomTpl.customLogFilter().withCustomTemplates());
@@ -71,8 +70,9 @@ public class GetZipPackagesAPITests {
                 .pass("BPMAdmin123!")
                 .build();
         LOG.info(svetuser2.toString());
-    }
 
+    }
+*/
     public Response Auth(User user) {
      /*   this.body = "{" +
                 "\"UserName\":\"" + user.name + "\"," +
@@ -84,7 +84,7 @@ public class GetZipPackagesAPITests {
                 .header("ForceUseSession", "true")
                 .header("Content-Type", "application/json")
                 .body(user)
-                .baseUri(url + ":" + port)
+                .baseUri(url)
                 .post("/ServiceModel/AuthService.svc/Login")
                 .then().log().all()
                 .statusCode(200)
@@ -99,8 +99,8 @@ public class GetZipPackagesAPITests {
         bpmcsrf = response.cookie("BPMCSRF");
         cookiesMap = response.getCookies();
         cookiesMap.forEach((k, v) -> System.out.println("===" + k + " :" + v));
-        String cookiesStringCore = "BPMSESSIONID=" + cookiesMap.get("BPMSESSIONID") + "; .ASPXAUTH=" + cookiesMap.get(".ASPXAUTH") + "; BPMCSRF=" + cookiesMap.get("BPMCSRF") + "; CsrfToken=" + cookiesMap.get("CsrfToken");
-        cookiesString = cookiesStringCore;
+        cookiesStringCore = "BPMSESSIONID=" + cookiesMap.get("BPMSESSIONID") + "; .ASPXAUTH=" + cookiesMap.get(".ASPXAUTH") + "; BPMCSRF=" + cookiesMap.get("BPMCSRF") + "; CsrfToken=" + cookiesMap.get("CsrfToken");
+        cookiesStringFrame = "BPMSESSIONID=" + BPMSESSIONID + "; .ASPXAUTH=" + cookiesMap.get(".ASPXAUTH") + "; BPMCSRF=" + cookiesMap.get("BPMCSRF") + "; BPMLOADER=" + cookiesMap.get("BPMLOADER") + "; UserName=" + cookiesMap.get("UserName");
 
 
         if (bpmcsrf != null) {
@@ -111,7 +111,10 @@ public class GetZipPackagesAPITests {
         }
     }
 
-    public Response GetZipPackages(String PKGName) {
+    public Response GetZipPackages(String PKGName, Platform platform) {
+        GetZipPackages = (platform == Platform.Frame) ? "/0" + GetZipPackages : GetZipPackages;
+        cookiesString = (platform == Platform.Frame) ? cookiesStringFrame : cookiesStringCore;
+
         Response response = given()
                 .relaxedHTTPSValidation()  //отключение проверки сертификатов https
                 .header("ForceUseSession", "true")
@@ -121,7 +124,7 @@ public class GetZipPackagesAPITests {
                 .header("Content-Encoding", "gzip")
                 .header("Accept", "text/plain") // <-- ожидаем base64-строку
                 .body(PKGName)
-                .baseUri(url + ":" + port)
+                .baseUri(url)
                 .post(GetZipPackages)
                 .then().log().all()
 
@@ -151,7 +154,7 @@ public class GetZipPackagesAPITests {
 
     public void GetZipPackagesWithCanManageSolutionCheckTest() {
         Auth(supervisor1);
-        Assertions.assertEquals(GetZipPackages(PKGName).getStatusCode(), 200);
+        Assertions.assertEquals(GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode(), 200);
     }
 
     @Test
@@ -159,6 +162,6 @@ public class GetZipPackagesAPITests {
 
     public void GetZipPackagesWithNotCanManageSolutionTest() {
         Auth(svetuser2);
-        Assertions.assertEquals(GetZipPackages(PKGName).getStatusCode(), 403);
+        Assertions.assertEquals(GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode(), 403);
     }
 }

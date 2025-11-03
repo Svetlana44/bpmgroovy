@@ -56,7 +56,7 @@ public class ScreenshotsTests extends BaseTests {
         //     Configuration.timeout = 60_000; /*   по умолчанию 30 сек  , м.б. мало*/
         /*  driver описан в базовом классе */
         AuthPage authPage = new AuthPage(driver);
-        authPage.authBasic();
+        authPage.authBasic(loginSupervisor, passSupervisor);
     }
 
     @AfterEach

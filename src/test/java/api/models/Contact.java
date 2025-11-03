@@ -1,5 +1,6 @@
 package api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.javafaker.Faker;
@@ -19,6 +20,7 @@ import java.util.Random;
    Builder от ломбок для удобного построения объектов вместо get/set и присвоения значений
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -103,8 +105,8 @@ public class Contact {
     @JsonProperty("DoNotUseMail")
     private boolean doNotUseMail;
 
-    @JsonProperty("IsNonActualEmail")
-    private boolean isNonActualEmail;
+//    @JsonProperty("IsNonActualEmail")
+//    private boolean isNonActualEmail;
 
     @JsonProperty("JobTitle")
     private String jobTitle;
@@ -168,6 +170,9 @@ public class Contact {
 
     @JsonProperty("RegionId")
     private String regionId;
+
+    @JsonProperty("DistrictId")
+    private String districtId;
 
     @JsonProperty("DoNotUseEmail")
     private boolean doNotUseEmail;

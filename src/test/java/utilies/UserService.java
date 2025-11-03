@@ -16,12 +16,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import static io.restassured.RestAssured.given;
 
 public class UserService {
     private static final Random random = new Random();
-    private static final Logger LOG = LoggerFactory.getLogger(ContactServicies.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class.getName());
     private final Properties properties = new Properties();
     private String loginSupervisor;
     private String passSupervisor;
@@ -59,7 +60,7 @@ public class UserService {
                 .modifiedBy(supervisorId)
                 .contact(contactId)
                 .name(login)
-                .userPassword(login + "!")
+                .userPassword("BPMAdmin123!")
                 .timeZone(null)
                 .lDAPElement(null)
                 .build();
@@ -105,7 +106,9 @@ public class UserService {
         LOG.info(typeUrl + "Нахождение Юзера по Id");
         return
                 given()
+                        .relaxedHTTPSValidation()  //отключение проверки сертификатов https
                         .when()
+                        .header("ForceUseSession", "true")
                         //   .header("ForceUseSession", "true")
                         .header("Accept", "application/json;odata=verbose")
                         .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
@@ -121,12 +124,47 @@ public class UserService {
                         , чтобы удалить все невидимые пробелы из ответа */
     }
 
+    @Step("Нахождение Юзера по параметру. Name или Id")
+    public static Response getUserByParam(Auth auth, String typeUrl, String param) {
+        auth.authHttpORHttps(typeUrl);
+        String requestPath = "/odata";
+        if (typeUrl.equals("urlframework")) {
+            requestPath = "/0" + requestPath;
+        }
+        LOG.info(typeUrl + "Нахождение Юзера по параметру. Name или Id");
+        // Если param — GUID, берём сущность по ключу. Иначе фильтруем по Name
+        final Pattern guidPattern = Pattern.compile("(?i)^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
+        String path;
+        if (guidPattern.matcher(param).matches()) {
+            path = requestPath + "/SysAdminUnit(" + param + ")";
+        } else {
+            String safeName = param.replace("'", "''"); // OData экранирование одинарных кавычек
+            path = requestPath + "/SysAdminUnit?$filter=Name eq '" + safeName + "'&$select=Id,Name";
+        }
+
+        return given()
+                .relaxedHTTPSValidation()  //отключение проверки сертификатов https
+                .when()
+                .header("ForceUseSession", "true")
+                //   .header("ForceUseSession", "true")
+                .header("Accept", "application/json;odata=verbose")
+                .header("BPMCSRF", auth.cookiesMap.get("BPMCSRF"))
+                .header("Cookie", auth.cookiesString)
+                .baseUri(auth.selectUrl(typeUrl))
+                .get(path)
+                .then().log().all()
+                .statusCode(200)
+                .extract().response();
+                        /* не забыть обрезать пробел  (ZWNBSP)  str.replace("\uFEFF", "").replace("\u200B", "")
+                        , чтобы удалить все невидимые пробелы из ответа */
+    }
+
     public static void main(String[] args) throws IOException {
         //AE9CFAF6-CD8C-4FEF-9ECB-32CDE707774B
         //Supervisor
         // 7F3B869F-34F3-4F20-AB4D-7480A5FDF647
         //   getUserById(new Auth(), "urlframework", "AE9CFAF6-CD8C-4FEF-9ECB-32CDE707774B");
-        createUser("SVETuserSVET333unchecked", Platform.Frame);
+        createUser("SVETuser", Platform.CoreNet8);
 // 0/rest/AdministrationService/GetIsUserBlocked
         // 0/rest/SocialSubscriptionService/GetIsUserSubscribed
         // POST
