@@ -16,6 +16,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.io.FileHandler;
@@ -33,6 +34,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
+import lombok.Builder;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class UIBaseTests {
@@ -68,6 +70,7 @@ public abstract class UIBaseTests {
                 ChromeOptions options = new ChromeOptions();
                 // Принимаем невалидные/самоподписанные сертификаты
                 options.setAcceptInsecureCerts(true);
+                options.setPageLoadStrategy(PageLoadStrategy.EAGER);
                 // Отключаем CDP и уменьшаем предупреждения о несовместимости версий
                 options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation", "enable-logging"});
                 options.addArguments("--disable-blink-features=AutomationControlled");
@@ -137,8 +140,8 @@ public abstract class UIBaseTests {
 
     @BeforeEach
     void setUp() {
-        // Инициализируем wait для явных ожиданий
-        wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        // Инициализируем wait для явных ожиданий (увеличено для тяжёлых страниц System Designer)
+        wait = new WebDriverWait(driver, Duration.ofSeconds(60));
         // Открываем страницу перед каждым тестом
         driver.get(url);
         // Автопропуск interstitial страницы Chrome ("Your connection is not private") при редких кейсах
