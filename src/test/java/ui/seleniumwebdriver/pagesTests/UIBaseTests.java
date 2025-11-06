@@ -9,14 +9,9 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import listener.CustomTpl;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.io.FileHandler;
@@ -34,7 +29,6 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
-import lombok.Builder;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class UIBaseTests {
@@ -49,6 +43,7 @@ public abstract class UIBaseTests {
     protected static String url;
     protected WebDriver driver;
     protected WebDriverWait wait;
+    public String testName;
 
     @BeforeAll
     void oneTimeSetUp() {
@@ -139,7 +134,9 @@ public abstract class UIBaseTests {
     }
 
     @BeforeEach
+        //  void setUp(TestInfo testInfo) {
     void setUp() {
+        //    testName = testInfo.getTestMethod().get().getName();
         // Инициализируем wait для явных ожиданий (увеличено для тяжёлых страниц System Designer)
         wait = new WebDriverWait(driver, Duration.ofSeconds(60));
         // Открываем страницу перед каждым тестом
@@ -150,12 +147,12 @@ public abstract class UIBaseTests {
             String currentUrl = driver.getCurrentUrl();
             if ((title != null && (
                     title.toLowerCase().contains("your connection is not private") ||
-                    title.toLowerCase().contains("privacy error") ||
-                    title.toLowerCase().contains("подключение не является частным")
+                            title.toLowerCase().contains("privacy error") ||
+                            title.toLowerCase().contains("подключение не является частным")
             )) || (currentUrl != null && (
                     currentUrl.contains("interstitial") ||
-                    currentUrl.contains("ssl") ||
-                    currentUrl.startsWith("chrome-error://")
+                            currentUrl.contains("ssl") ||
+                            currentUrl.startsWith("chrome-error://")
             ))) {
                 driver.findElement(By.tagName("body")).sendKeys("thisisunsafe");
             }

@@ -21,7 +21,7 @@ public class RightPanelPage extends BasePage {
         super(driver);
     }
 
-    public void openConfigurationManagementMenu() {
+    public RightPanelPage openConfigurationManagementMenu() {
         wait.until(ExpectedConditions.elementToBeClickable(configurationManagementLink)).click();
 
         // ждём появления нового окна/вкладки
@@ -35,6 +35,7 @@ public class RightPanelPage extends BasePage {
         // ждём, пока инициализируется Angular Material UI на новой вкладке
         // как сигнал готовности ждём появления любых mat-кнопок
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(@class,'mat-focus-indicator')]")));
+        return this;
     }
 
     // Триггер меню действий (три точки) внутри строки пакета
@@ -45,13 +46,13 @@ public class RightPanelPage extends BasePage {
     /**
      * Открыть меню действий (три точки) у первой видимой строки (если много одинаковых пунктов)
      */
-    public void openFirstRowActionsMenu() {
+    public RightPanelPage openFirstRowActionsMenu() {
         List<WebElement> triggers = wait.until(d -> d.findElements(actionsMenuTrigger));
         for (WebElement trigger : triggers) {
             if (trigger.isDisplayed() && trigger.isEnabled()) {
                 wait.until(ExpectedConditions.elementToBeClickable(trigger)).click();
                 wait.until(ExpectedConditions.visibilityOfElementLocated(matMenuPanel));
-                return;
+                return this;
             }
         }
         throw new IllegalStateException("Не найден кликабельный триггер меню действий");
@@ -60,11 +61,13 @@ public class RightPanelPage extends BasePage {
     /**
      * Открыть меню действий (три точки) для строки, содержащей указанный текст (например, имя пакета)
      */
-    public void openRowActionsMenuByText(String rowText) {
+    public RightPanelPage openRowActionsMenuByText(String rowText) {
         String xpath = "//*[contains(@class,'package-item') or contains(@class,'package-item-right') or contains(@class,'package-item-left')]" +
                 "[.//*[contains(normalize-space(.), '" + rowText + "')]]//div[contains(@class,'actions-menu-trigger-wrapper')]";
         WebElement trigger = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
         trigger.click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(matMenuPanel));
+
+        return this;//возврат этой же RightPanelPage, чтобы можно было на ней вызывать цепочку методов
     }
 }
