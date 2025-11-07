@@ -1,7 +1,6 @@
 package ui.selenoid;
 
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -23,17 +22,21 @@ public class SelenoidTests {
     public void selenoidDockerTest() throws Exception {
         // Настраиваем ChromeOptions (W3C синтаксис)
         ChromeOptions options = new ChromeOptions();
-        options.setBrowserVersion("128");
-        
+        options.setBrowserVersion("128.0");
+
         // Настраиваем опции Selenoid через selenoid:options (W3C синтаксис)
         Map<String, Object> selenoidOptions = new HashMap<>();
         selenoidOptions.put("enableVNC", true);
         selenoidOptions.put("enableVideo", true);
-        options.setCapability("selenoid:options", selenoidOptions);
 
+        options.setCapability("selenoid:options", selenoidOptions);
+        /*Чтобы работало, см чтобы контейнеры были запущены и видео и браузера и selenoid
+         * aerokube/selenoid:1.11.2
+         * selenoid/video-recorder:latest-release
+         * selenoid/chrome:128.0 */
         // Подключаемся к Selenoid
         URL selenoidUrl = new URL("http://localhost:4444/wd/hub");
-        WebDriver driver = new RemoteWebDriver(selenoidUrl, options);
+        RemoteWebDriver driver = new RemoteWebDriver(selenoidUrl, options);
 
         // Тест
         driver.get("https://vk.com");
@@ -46,8 +49,8 @@ public class SelenoidTests {
     public void selenoidFirefoxTest() throws Exception {
         // Настраиваем FirefoxOptions (W3C синтаксис)
         FirefoxOptions options = new FirefoxOptions();
-        options.setBrowserVersion("latest");
-        
+        options.setBrowserVersion("123.0");
+
         // Настраиваем опции Selenoid через selenoid:options (W3C синтаксис)
         Map<String, Object> selenoidOptions = new HashMap<>();
         selenoidOptions.put("enableVNC", true);
@@ -56,7 +59,7 @@ public class SelenoidTests {
 
         // Подключаемся к Selenoid
         URL selenoidUrl = new URL("http://localhost:4444/wd/hub");
-        WebDriver driver = new RemoteWebDriver(selenoidUrl, options);
+        RemoteWebDriver driver = new RemoteWebDriver(selenoidUrl, options);
 
         // Тест
         driver.get("https://vk.com");
