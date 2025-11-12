@@ -15,6 +15,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.io.FileHandler;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class UIBaseTests {
@@ -82,6 +85,10 @@ public abstract class UIBaseTests {
                 driver.manage().window().setSize(new Dimension(1920, 1080));
                 driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(200));
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(200));
+
+                LoggingPreferences loggingPreferences = new LoggingPreferences();
+                loggingPreferences.enable(LogType.BROWSER, Level.ALL);
+                options.setCapability("goog:loggingPrefs", loggingPreferences);
 
         }
 

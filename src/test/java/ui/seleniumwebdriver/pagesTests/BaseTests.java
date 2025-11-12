@@ -10,11 +10,13 @@ import listener.CustomTpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utilies.UserService;
@@ -24,6 +26,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class BaseTests {
     protected static final Random random = new Random();
@@ -122,6 +125,10 @@ public class BaseTests {
         options.addArguments("--allow-insecure-localhost");
         // Отключаем логирование CDP чтобы уменьшить предупреждения
         System.setProperty("webdriver.chrome.silentOutput", "true");
+        //для allure логов
+        LoggingPreferences loggingPreferences = new LoggingPreferences();
+        loggingPreferences.enable(LogType.BROWSER, Level.ALL);
+        options.setCapability("goog:loggingPrefs", loggingPreferences);
         //FullHD
         driver = new ChromeDriver(options);
         driver.manage().window().setSize(new Dimension(1920, 1080));
