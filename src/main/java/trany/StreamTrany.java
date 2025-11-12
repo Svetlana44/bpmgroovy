@@ -20,8 +20,7 @@ public class StreamTrany {
     }
 
     public static void main(String[] args) {
-        String result = immutableMap.values().stream()
-                .collect(Collectors.joining(" "));
+        String result = String.join(" ", immutableMap.values());
         System.out.println("++++++" + result);
 
 
@@ -31,9 +30,7 @@ public class StreamTrany {
                         el -> el + " plus"
                 ));
 
-        collectMap.forEach((k, v) -> {
-            System.out.println(k + " " + v);
-        });
+        collectMap.forEach((k, v) -> System.out.println(k + " " + v));
 
 
         map.forEach((k, v) -> {
