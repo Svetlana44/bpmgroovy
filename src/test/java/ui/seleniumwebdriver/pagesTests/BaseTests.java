@@ -19,18 +19,15 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utilies.UserService;
+import utilies.PropertiesReader;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
-import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
 
 public class BaseTests {
     protected static final Random random = new Random();
-    protected static final Properties properties = new Properties();
+    protected static final PropertiesReader propertiesReader = PropertiesReader.getInstance();
     /*Логгер для использования в статических методах (@BeforeAll, @AfterAll)*/
     protected static final Logger staticLOG = LoggerFactory.getLogger(BaseTests.class);
     /*Плюсы:
@@ -81,16 +78,12 @@ public class BaseTests {
         // Автоматическое определение версии Chrome и скачивание совместимого драйвера
         WebDriverManager.chromedriver().setup();
 
-        try (InputStream in = UserService.class.getClassLoader().getResourceAsStream("configs/stands.properties")) {
-            properties.load(in);
-            loginSupervisor = properties.getProperty("login");
-            passSupervisor = properties.getProperty("password");
-            url = properties.getProperty("url");
-            //.replaceAll("^\"|\"$", "")
-        } catch (IOException e) {
-            System.out.println("Спасите, помогите, проперти не грузятся.");
-            e.printStackTrace();
-        }
+        /*  Использование singleton для чтения properties
+         справку см. в пакете  aPatterns/PropertiesReader.md */
+        loginSupervisor = propertiesReader.getProperty("login");
+        passSupervisor = propertiesReader.getProperty("password");
+         //.replaceAll("^\"|\"$", "")  - удаляет кавычки в начале и конце строки
+        url = propertiesReader.getProperty("url");
         staticLOG.info("Загрузка проперти.");
 
         supervisor1 = User.builder()
