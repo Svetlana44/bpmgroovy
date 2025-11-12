@@ -26,15 +26,6 @@ public class AuthCore {
     public Map<String, String> cookiesMap;
     public String cookiesStringCore;
     AuthUser user;
-    String expected = """
-            {
-                "Code": 0,
-                "Message": "",
-                "Exception": null,
-                "PasswordChangeUrl": null,
-                "RedirectUrl": null
-            }
-            """;
     //    public String cookiesASPXAUTH;
 //    public String cookiesBPMLOADER;
 //    public String cookiesUserName;

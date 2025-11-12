@@ -36,16 +36,6 @@ public class Auth {
     private String body;
     private Properties properties = new Properties();
     AuthUser user;
-    String expected = """
-            {
-                "Code": 0,
-                "Message": "",
-                "Exception": null,
-                "PasswordChangeUrl": null,
-                "RedirectUrl": null
-            }
-            """;
-
 
     public Auth() {
         this.authProperti();

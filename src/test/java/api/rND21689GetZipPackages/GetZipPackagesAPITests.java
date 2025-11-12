@@ -34,15 +34,6 @@ public class GetZipPackagesAPITests extends BaseTests {
     public String bpmcsrf;
     String cookiesStringCore;
     String cookiesStringFrame;
-    String expected = """
-            {
-                "Code": 0,
-                "Message": "",
-                "Exception": null,
-                "PasswordChangeUrl": null,
-                "RedirectUrl": null
-            }
-            """;
 
     /*
         @Step(".isCanManageSolution(false) носит информативный характер, и не применён в коде")
@@ -52,8 +43,8 @@ public class GetZipPackagesAPITests extends BaseTests {
                     new RequestLoggingFilter()
                     , new ResponseLoggingFilter()
                     , new AllureRestAssured());*/
-    //Кастомный логер Aluure. статичный - см третий в списке.
- /*       RestAssured.filters(
+    /* Кастомный логер Aluure. статичный - см третий в списке.
+        RestAssured.filters(
                 new RequestLoggingFilter()
                 , new ResponseLoggingFilter()
                 , CustomTpl.customLogFilter().withCustomTemplates());
@@ -154,7 +145,7 @@ public class GetZipPackagesAPITests extends BaseTests {
 
     public void GetZipPackagesWithCanManageSolutionCheckTest() {
         Auth(supervisor1);
-        Assertions.assertEquals(GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode(), 200);
+        Assertions.assertEquals(200, GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode());
     }
 
     @Test
@@ -162,6 +153,6 @@ public class GetZipPackagesAPITests extends BaseTests {
 
     public void GetZipPackagesWithNotCanManageSolutionTest() {
         Auth(svetuser2);
-        Assertions.assertEquals(GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode(), 403);
+        Assertions.assertEquals(403, GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode());
     }
 }
