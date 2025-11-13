@@ -1,5 +1,6 @@
 package ui.seleniumwebdriver.pagesTests;
 
+import api.models.TestUserFactory;
 import api.rND21689GetZipPackages.models.User;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Step;
@@ -57,6 +58,11 @@ public class BaseTests {
             "Загрузка stands.properties и System.setProperty(\"webdriver.chrome.driver\"" +
             "Cоздание пользователей системы")
     public static void oneTimeSetUp() {
+        // Подавляем предупреждения Selenium о CDP версиях
+        java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("org.openqa.selenium.devtools").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("org.openqa.selenium.chromium").setLevel(Level.SEVERE);
+        
         RestAssured.filters(
                 new RequestLoggingFilter()
                 , new ResponseLoggingFilter()
@@ -85,20 +91,19 @@ public class BaseTests {
          //.replaceAll("^\"|\"$", "")  - удаляет кавычки в начале и конце строки
         url = propertiesReader.getProperty("url");
         staticLOG.info("Загрузка проперти.");
+        staticLOG.info("Загружен URL из properties: " + url);
+        
+        // Проверяем, что URL загружен корректно
+        if (url == null || url.isEmpty() || url.equals("url")) {
+            staticLOG.error("ОШИБКА: URL не загружен из properties! Значение: '" + url + "'");
+            throw new IllegalStateException("URL не может быть пустым или равным 'url'. Проверьте файл configs/stands.properties");
+        }
 
-        supervisor1 = User.builder()
-                .isCanManageSolution(true)
-                .name("Supervisor")
-                .isCanViewConfiguration(true)
-                .pass("BPMAdmin123!")
-                .build();
-        svetuser2 = User.builder()
-                .isCanManageSolution(false)
-                .name("SVETuser")
-                .isCanViewConfiguration(true)
-                .pass("BPMAdmin123!")
-                .build();
-        LOG.info(svetuser2.toString());
+        // Использование TestUserFactory для создания стандартных тестовых пользователей
+        // Преимущества: централизация, использование values из properties, улучшенная читаемость
+        supervisor1 = TestUserFactory.createSupervisor();
+        svetuser2 = TestUserFactory.createSvetUser();
+        LOG.info("Созданы тестовые пользователи: " + supervisor1.name + "и " + svetuser2.toString());
 
     }
 
@@ -109,6 +114,8 @@ public class BaseTests {
         options.setAcceptInsecureCerts(true);
         // Отключаем CDP для устранения предупреждений о несовместимости версий
         options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation", "enable-logging"});
+        // Отключаем CDP полностью для устранения предупреждений о несовместимости версий Chrome 142
+        options.setExperimentalOption("useAutomationExtension", false);
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.addArguments("--disable-dev-shm-usage"); // Избегаем проблем с /dev/shm
         options.addArguments("--no-sandbox"); // Для стабильности в некоторых окружениях
@@ -118,6 +125,8 @@ public class BaseTests {
         options.addArguments("--allow-insecure-localhost");
         // Отключаем логирование CDP чтобы уменьшить предупреждения
         System.setProperty("webdriver.chrome.silentOutput", "true");
+        // Подавляем предупреждения о CDP версиях
+        System.setProperty("webdriver.chrome.verboseLogging", "false");
         //для allure логов
         LoggingPreferences loggingPreferences = new LoggingPreferences();
         loggingPreferences.enable(LogType.BROWSER, Level.ALL);
@@ -127,6 +136,13 @@ public class BaseTests {
         driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+        
+        // Проверяем, что URL инициализирован
+        if (url == null || url.isEmpty() || url.equals("url")) {
+            LOG.error("URL не инициализирован! Проверьте файл configs/stands.properties");
+            throw new IllegalStateException("URL не может быть пустым или равным 'url'. Проверьте настройки в properties файле.");
+        }
+        LOG.info("Открытие URL: " + url);
         driver.get(url);
 
         // Автопропуск interstitial страницы Chrome ("Your connection is not private") при редких кейсах

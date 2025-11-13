@@ -4,7 +4,9 @@ import api.rND21689GetZipPackages.models.User;
 import enams.Platform;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,24 @@ public class GetZipPackagesAPITests extends BaseTests {
     public String bpmcsrf;
     String cookiesStringCore;
     String cookiesStringFrame;
+
+    /**
+     * Переопределяем setUp() из BaseTests, чтобы не инициализировать WebDriver для API тестов.
+     * API тесты используют только REST API и не нуждаются в браузере.
+     */
+    @BeforeEach
+    public void setUp() {
+        // API тесты не нуждаются в WebDriver, поэтому метод пустой
+        // URL и другие настройки загружаются в @BeforeAll oneTimeSetUp() из BaseTests
+    }
+
+    /**
+     * Переопределяем ternDown() из BaseTests, чтобы не закрывать несуществующий WebDriver.
+     */
+    @AfterEach
+    public void ternDown() {
+        // API тесты не используют WebDriver, поэтому метод пустой
+    }
 
     /*
         @Step(".isCanManageSolution(false) носит информативный характер, и не применён в коде")
@@ -70,6 +90,14 @@ public class GetZipPackagesAPITests extends BaseTests {
                 "\"UserPassword\":\"" + user.pass + "\"" +
                 "}";*/
         LOG.info(user.toString() + "============================");
+        
+        // Проверяем, что URL загружен из properties
+        if (url == null || url.isEmpty() || url.equals("url")) {
+            LOG.error("URL не загружен из properties! Текущее значение: '" + url + "'");
+            throw new IllegalStateException("URL не может быть пустым или равным 'url'. Проверьте, что @BeforeAll oneTimeSetUp() выполнился и загрузил properties.");
+        }
+        LOG.info("Используется URL: " + url);
+        
         Response response = given()
                 .relaxedHTTPSValidation()  //отключение проверки сертификатов https
                 .header("ForceUseSession", "true")
@@ -105,6 +133,13 @@ public class GetZipPackagesAPITests extends BaseTests {
     public Response GetZipPackages(String PKGName, Platform platform) {
         GetZipPackages = (platform == Platform.Frame) ? "/0" + GetZipPackages : GetZipPackages;
         cookiesString = (platform == Platform.Frame) ? cookiesStringFrame : cookiesStringCore;
+
+        // Проверяем, что URL загружен из properties
+        if (url == null || url.isEmpty() || url.equals("url")) {
+            LOG.error("URL не загружен из properties! Текущее значение: '" + url + "'");
+            throw new IllegalStateException("URL не может быть пустым или равным 'url'. Проверьте, что @BeforeAll oneTimeSetUp() выполнился и загрузил properties.");
+        }
+        LOG.info("Используется URL для GetZipPackages: " + url);
 
         Response response = given()
                 .relaxedHTTPSValidation()  //отключение проверки сертификатов https

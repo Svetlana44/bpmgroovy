@@ -71,6 +71,8 @@ public abstract class UIBaseTests {
                 options.setPageLoadStrategy(PageLoadStrategy.EAGER);
                 // Отключаем CDP и уменьшаем предупреждения о несовместимости версий
                 options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation", "enable-logging"});
+                // Отключаем CDP полностью для устранения предупреждений о несовместимости версий Chrome 142
+                options.setExperimentalOption("useAutomationExtension", false);
                 options.addArguments("--disable-blink-features=AutomationControlled");
                 options.addArguments("--disable-dev-shm-usage"); // Избегаем проблем с /dev/shm
                 options.addArguments("--no-sandbox"); // Для стабильности в некоторых окружениях
@@ -81,6 +83,8 @@ public abstract class UIBaseTests {
                 options.addArguments("--allow-insecure-localhost");
                 // Отключаем логирование CDP чтобы уменьшить предупреждения
                 System.setProperty("webdriver.chrome.silentOutput", "true");
+                // Подавляем предупреждения о CDP версиях
+                System.setProperty("webdriver.chrome.verboseLogging", "false");
                 driver = new ChromeDriver(options);
                 driver.manage().window().setSize(new Dimension(1920, 1080));
                 driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(200));

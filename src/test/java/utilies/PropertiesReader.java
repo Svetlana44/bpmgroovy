@@ -113,7 +113,7 @@ public class PropertiesReader {
      * @return значение свойства или null, если ключ не найден
      */
     public String getProperty(String key) {
-        return getProperty(DEFAULT_PROPERTIES_FILE, key);
+        return getPropertyFromFileByKey(DEFAULT_PROPERTIES_FILE, key);
     }
 
     /**
