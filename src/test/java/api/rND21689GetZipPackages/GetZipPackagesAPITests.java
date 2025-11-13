@@ -145,7 +145,7 @@ public class GetZipPackagesAPITests extends BaseTests {
 
     public void GetZipPackagesWithCanManageSolutionCheckTest() {
         Auth(supervisor1);
-        Assertions.assertEquals(200, GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode());
+        Assertions.assertEquals(200, GetZipPackages(PKGName, Platform.Frame).getStatusCode());
     }
 
     @Test
@@ -153,6 +153,6 @@ public class GetZipPackagesAPITests extends BaseTests {
 
     public void GetZipPackagesWithNotCanManageSolutionTest() {
         Auth(svetuser2);
-        Assertions.assertEquals(403, GetZipPackages(PKGName, Platform.CoreNet8).getStatusCode());
+        Assertions.assertEquals(403, GetZipPackages(PKGName, Platform.Frame).getStatusCode());
     }
 }
