@@ -63,14 +63,18 @@ supervisor1 = User.builder()
         .isCanManageSolution(true)
         .name("Supervisor")
         .isCanViewConfiguration(true)
-        .pass("BPMAdmin123!")
+        .
+
+pass("password")
         .build();
 
 svetuser2 = User.builder()
         .isCanManageSolution(false)
         .name("SVETuser")
         .isCanViewConfiguration(true)
-        .pass("BPMAdmin123!")
+        .
+
+pass("password")
         .build();
 ```
 
@@ -189,7 +193,9 @@ supervisor1 = User.builder()
         .isCanManageSolution(true)
         .name("Supervisor")
         .isCanViewConfiguration(true)
-        .pass("BPMAdmin123!")
+        .
+
+pass("password")
         .build();
 ```
 

@@ -1,7 +1,6 @@
-package api.models;
+package utilies;
 
 import api.rND21689GetZipPackages.models.User;
-import utilies.PropertiesReader;
 
 /**
  * Фабрика для создания тестовых пользователей.
@@ -13,7 +12,7 @@ import utilies.PropertiesReader;
  * - Легко добавлять новые типы пользователей
  * - Улучшенная читаемость тестов
  */
-public class TestUserFactory {
+public class UserFactory {
     
     private static final PropertiesReader propertiesReader = PropertiesReader.getInstance();
     

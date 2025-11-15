@@ -1,6 +1,5 @@
 package ui.seleniumwebdriver.pagesTests;
 
-import api.models.TestUserFactory;
 import api.rND21689GetZipPackages.models.User;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Step;
@@ -21,6 +20,7 @@ import org.openqa.selenium.logging.LoggingPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utilies.PropertiesReader;
+import utilies.UserFactory;
 
 import java.time.Duration;
 import java.util.Random;
@@ -99,10 +99,10 @@ public class BaseTests {
             throw new IllegalStateException("URL не может быть пустым или равным 'url'. Проверьте файл configs/stands.properties");
         }
 
-        // Использование TestUserFactory для создания стандартных тестовых пользователей
-        // Преимущества: централизация, использование values из properties, улучшенная читаемость
-        supervisor1 = TestUserFactory.createSupervisor();
-        svetuser2 = TestUserFactory.createSvetUser();
+        /* Использование TestUserFactory для создания стандартных тестовых пользователей
+         Преимущества: централизация, использование values из properties, улучшенная читаемость */
+        supervisor1 = UserFactory.createSupervisor();
+        svetuser2 = UserFactory.createSvetUser();
         LOG.info("Созданы тестовые пользователи: " + supervisor1.name + "и " + svetuser2.toString());
 
     }
