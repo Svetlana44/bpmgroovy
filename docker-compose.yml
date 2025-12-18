@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: bpmsoft-postgres
+    environment:
+      POSTGRES_DB: bpmsoft
+      POSTGRES_USER: bpmsoft_user
+      POSTGRES_PASSWORD: BPMAdmin123!
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bpmsoft-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bpmsoft_user -d bpmsoft"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:6-alpine
+    container_name: bpmsoft-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - bpmsoft-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass BPMAdmin123!
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "BPMAdmin123!", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  bpmsoft-network:
+    driver: bridge
+

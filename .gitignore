@@ -42,3 +42,9 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### BPMSoft Connection Parameters ###
+# Файлы с параметрами подключения (содержат пароли и чувствительные данные)
+connection-params.local.txt
+*.local.txt
+*.local.properties
