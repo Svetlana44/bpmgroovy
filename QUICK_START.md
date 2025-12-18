@@ -1,0 +1,148 @@
+# Быстрый старт BPMSoft
+
+## Что уже сделано
+
+✅ Создан `docker-compose.yml` для PostgreSQL и Redis  
+✅ Созданы скрипты управления (`start-infrastructure.ps1`, `stop-infrastructure.ps1`)  
+✅ Создана подробная инструкция (`DEPLOYMENT.md`)
+
+## Что нужно сделать вам
+
+### 1. Установить Docker Desktop (если еще не установлен)
+- Скачайте с [официального сайта](https://www.docker.com/products/docker-desktop/)
+- Установите и запустите Docker Desktop
+- Убедитесь, что включена поддержка Linux контейнеров (в современных версиях используется WSL2)
+- Проверьте, что Docker запущен: `docker --version`
+
+### 2. Установить .NET 8 Runtime или SDK (если еще не установлен)
+- BPMSoft работает на .NET 8
+- Скачайте с [официального сайта Microsoft](https://dotnet.microsoft.com/download/dotnet/8.0)
+- Выберите ".NET 8.0 Runtime" (для запуска) или ".NET 8.0 SDK" (для разработки)
+- Установите и проверьте: `dotnet --version`
+
+### 3. Запустить инфраструктуру
+
+```powershell
+# В PowerShell из корня проекта
+.\start-infrastructure.ps1
+```
+
+Или вручную:
+```powershell
+docker-compose up -d
+```
+
+### 4. Распаковать и настроить BPMSoft
+
+1. Распакуйте архив: `C:\Users\playg\Downloads\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL.zip`
+2. Найдите файлы конфигурации (обычно `appsettings.json` или `web.config`)
+3. Настройте строки подключения:
+
+**PostgreSQL:**
+```
+Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=BPMAdmin123!
+```
+
+**Redis:**
+```
+localhost:6379,password=BPMAdmin123!
+```
+
+### 5. Запустить приложение BPMSoft
+
+**Вариант A: Через Kestrel (проще для разработки)**
+```powershell
+cd C:\BPMSoft\  # путь к распакованному приложению
+dotnet run
+# или
+.\BPMSoft.Web.exe
+```
+
+**Вариант B: Через IIS (для продакшена)**
+- См. подробную инструкцию в `DEPLOYMENT.md`, раздел "Шаг 2.4"
+
+## Параметры подключения
+
+**PostgreSQL 16:**
+- Host: `localhost`
+- Port: `5432`
+- Database: `bpmsoft`
+- User: `bpmsoft_user`
+- Password: `BPMAdmin123!`
+- Доступны утилиты: `pg_dump`, `pg_restore`, `psql`, `pg_dumpall`, `pg_basebackup`
+
+**Redis 6:**
+- Host: `localhost`
+- Port: `6379`
+- Password: `BPMAdmin123!`
+
+## Полезные команды
+
+```powershell
+# Проверить статус контейнеров
+docker-compose ps
+
+# Просмотр логов
+docker-compose logs -f
+
+# Остановить инфраструктуру
+.\stop-infrastructure.ps1
+# или
+docker-compose stop
+
+# Перезапустить инфраструктуру
+docker-compose restart
+
+# Полностью удалить контейнеры (данные сохранятся)
+docker-compose down
+
+# Удалить контейнеры и данные
+docker-compose down -v
+
+# Создать бэкап PostgreSQL
+docker exec bpmsoft-postgres pg_dump -U bpmsoft_user -d bpmsoft > backup_$(Get-Date -Format "yyyyMMdd_HHmmss").sql
+
+# Проверить версию PostgreSQL и доступность утилит
+docker exec bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft -c "SELECT version();"
+docker exec bpmsoft-postgres pg_dump --version
+```
+
+## Рекомендация по выбору способа развертывания
+
+**✅ Рекомендуется: Docker для инфраструктуры + Kestrel для приложения**
+
+Это самый простой и быстрый способ для локальной разработки:
+- Не требует настройки IIS
+- Легко запустить и остановить
+- Изолированные сервисы в контейнерах
+
+**Альтернатива: IIS**
+
+Используйте IIS, если:
+- Нужна интеграция с другими Windows-приложениями
+- Требуется продакшен-окружение на Windows Server
+- Нужны возможности IIS (load balancing, SSL termination и т.д.)
+
+## Что еще может потребоваться
+
+1. **SSL сертификаты** - для HTTPS (можно использовать самоподписанные для разработки)
+2. **Настройка брандмауэра** - разрешить порты приложения (5002, 5000, 5001)
+3. **Инициализация БД** - обычно происходит автоматически при первом запуске
+4. **Учетные данные по умолчанию** - Login: `Supervisor`, Password: `BPMAdmin123!` (или как в документации)
+
+## Подробная документация
+
+См. `DEPLOYMENT.md` для детальной инструкции по развертыванию.
+
+## Устранение неполадок
+
+**Контейнеры не запускаются:**
+- Проверьте, что Docker Desktop запущен
+- Проверьте, что порты 5432 и 6379 свободны
+- Смотрите логи: `docker-compose logs`
+
+**Приложение не подключается к БД:**
+- Убедитесь, что контейнеры запущены: `docker-compose ps`
+- Проверьте строку подключения в конфигурации
+- Проверьте логи приложения
+
