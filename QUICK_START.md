@@ -48,7 +48,34 @@ Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=BPMAdmi
 localhost:6379,password=BPMAdmin123!
 ```
 
-### 5. Запустить приложение BPMSoft
+### 5. Восстановить базу данных из бэкапа
+
+В архиве BPMSoft есть бэкап базы данных в папке `db`. Необходимо восстановить его перед первым запуском.
+
+**Способ 1: Использовать скрипт (рекомендуется)**
+
+```powershell
+.\restore-database.ps1 -BackupPath "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup"
+```
+
+**Способ 2: Вручную через docker**
+
+```powershell
+# Найти путь к бэкапу (пример)
+$backupPath = "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup"
+
+# Скопировать бэкап в контейнер
+docker cp $backupPath bpmsoft-postgres:/tmp/bpmsoft.backup
+
+# Восстановить базу данных
+docker exec bpmsoft-postgres pg_restore -U bpmsoft_user -d bpmsoft -c /tmp/bpmsoft.backup
+```
+
+**Примечание:** Если файл имеет расширение `.sql` вместо `.backup`, скрипт автоматически определит тип и выполнит восстановление через `psql`.
+
+Подробные инструкции см. в `DEPLOYMENT.md`, раздел "Шаг 3: Инициализация базы данных"
+
+### 6. Запустить приложение BPMSoft
 
 **Вариант A: Через Kestrel (проще для разработки)**
 ```powershell
@@ -127,7 +154,7 @@ docker exec bpmsoft-postgres pg_dump --version
 
 1. **SSL сертификаты** - для HTTPS (можно использовать самоподписанные для разработки)
 2. **Настройка брандмауэра** - разрешить порты приложения (5002, 5000, 5001)
-3. **Инициализация БД** - обычно происходит автоматически при первом запуске
+3. **Восстановление БД из бэкапа** - необходимо восстановить БД из файла бэкапа в папке `db` архива (см. шаг 5)
 4. **Учетные данные по умолчанию** - Login: `Supervisor`, Password: `BPMAdmin123!` (или как в документации)
 
 ## Подробная документация

@@ -173,11 +173,100 @@ dotnet run
 
 ## Шаг 3: Инициализация базы данных
 
-После первого запуска приложения BPMSoft обычно автоматически создает необходимые таблицы и структуры в базе данных. Если этого не произошло:
+В архиве BPMSoft находится бэкап базы данных, который необходимо восстановить перед первым запуском приложения.
 
-1. Проверьте логи приложения
-2. Убедитесь, что пользователь `bpmsoft_user` имеет права на создание таблиц
-3. При необходимости выполните миграции вручную (если они есть в архиве)
+### 3.1. Найти файл бэкапа
+
+Файл бэкапа обычно находится в папке `db` распакованного архива, например:
+```
+C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup
+```
+
+Или в другой директории, куда вы распаковали архив:
+```
+<путь_к_распакованному_архиву>\db\BPMSoft_Full_House_1.6.0.190.backup
+```
+
+### 3.2. Восстановление базы данных из бэкапа
+
+**Вариант A: Восстановление через docker exec (рекомендуется)**
+
+1. Создайте роль `sa`, если её нет (для совместимости с бэкапами BPMSoft):
+```powershell
+docker exec bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE ROLE sa WITH SUPERUSER CREATEDB CREATEROLE LOGIN;"
+```
+
+2. Скопируйте файл бэкапа в контейнер:
+```powershell
+docker cp "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup" bpmsoft-postgres:/tmp/bpmsoft.backup
+```
+
+3. Восстановите базу данных (используйте `--no-owner` и `--no-privileges` для избежания ошибок с ролью sa):
+```powershell
+docker exec bpmsoft-postgres pg_restore -U bpmsoft_user -d bpmsoft --no-owner --no-privileges -c /tmp/bpmsoft.backup
+```
+
+**Примечание:** Опции `--no-owner` и `--no-privileges` игнорируют команды установки владельцев и прав из бэкапа, что позволяет избежать ошибок с несуществующими ролями. Все объекты будут принадлежать пользователю `bpmsoft_user`.
+
+**Вариант B: Восстановление через psql (если бэкап в SQL формате)**
+
+Если файл имеет расширение `.sql` вместо `.backup`:
+```powershell
+Get-Content "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.sql" | docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft
+```
+
+**Вариант C: Восстановление с пересозданием базы данных**
+
+Если нужно полностью пересоздать базу данных:
+```powershell
+# Удалить существующую базу (если есть)
+docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "DROP DATABASE IF EXISTS bpmsoft;"
+
+# Создать новую базу
+docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE DATABASE bpmsoft;"
+
+# Создать роль sa (если не существует)
+docker exec bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'sa') THEN CREATE ROLE sa WITH SUPERUSER CREATEDB CREATEROLE LOGIN; END IF; END \$\$;"
+
+# Восстановить из бэкапа
+docker cp "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup" bpmsoft-postgres:/tmp/bpmsoft.backup
+docker exec bpmsoft-postgres pg_restore -U bpmsoft_user -d bpmsoft --no-owner --no-privileges -c /tmp/bpmsoft.backup
+```
+
+### 3.3. Проверка восстановления
+
+Проверьте, что база данных восстановлена корректно:
+```powershell
+# Проверить список таблиц
+docker exec bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft -c "\dt"
+
+# Проверить количество таблиц
+docker exec bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';"
+```
+
+### 3.4. Устранение проблем
+
+**Ошибка: "database does not exist"**
+- Убедитесь, что база данных `bpmsoft` создана: `docker exec bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE DATABASE bpmsoft;"`
+
+**Ошибка: "permission denied"**
+- Убедитесь, что пользователь `bpmsoft_user` имеет права на создание объектов в базе данных
+
+**Ошибка: "file not found"**
+- Проверьте правильность пути к файлу бэкапа
+- Убедитесь, что файл существует и доступен для чтения
+
+**Ошибка: "role 'sa' does not exist"**
+- Бэкап BPMSoft содержит ссылки на роль `sa` (system administrator из SQL Server)
+- Решение 1: Создайте роль `sa` перед восстановлением:
+  ```powershell
+  docker exec bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE ROLE sa WITH SUPERUSER CREATEDB CREATEROLE LOGIN;"
+  ```
+- Решение 2: Используйте опции `--no-owner` и `--no-privileges` при восстановлении:
+  ```powershell
+  docker exec bpmsoft-postgres pg_restore -U bpmsoft_user -d bpmsoft --no-owner --no-privileges -c /tmp/bpmsoft.backup
+  ```
+- Рекомендуется использовать оба решения одновременно
 
 ## Шаг 4: Проверка работы
 
