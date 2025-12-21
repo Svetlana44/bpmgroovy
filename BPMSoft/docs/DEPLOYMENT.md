@@ -93,7 +93,7 @@ docker exec -it bpmsoft-postgres pg_dump --version
 docker exec -it bpmsoft-postgres psql --version
 
 # Проверить подключение к Redis
-docker exec -it bpmsoft-redis redis-cli -a ВАШ_ПАРОЛЬ ping
+docker exec -it bpmsoft-redis redis-cli ping
 ```
 
 ### 1.3. Параметры подключения
@@ -109,8 +109,8 @@ docker exec -it bpmsoft-redis redis-cli -a ВАШ_ПАРОЛЬ ping
 **Redis:**
 - Host: `localhost` (или `127.0.0.1`)
 - Port: `6379`
-- Password: см. `scripts/docker-compose.yml` (если настроен)
-- Connection String: `localhost:6379,password=ВАШ_ПАРОЛЬ` (если с паролем) или `localhost:6379` (если без пароля)
+- Password: не требуется (без пароля)
+- Connection String: `localhost:6379`
 
 ## Шаг 2: Развертывание приложения BPMSoft
 
@@ -138,13 +138,13 @@ C:\BPMSoft\
 ```json
 {
   "Redis": {
-    "ConnectionString": "localhost:6379,password=ВАШ_ПАРОЛЬ",
+    "ConnectionString": "localhost:6379",
     "InstanceName": "BPMSoft:"
   }
 }
 ```
 
-**Примечание:** Замените `ВАШ_ПАРОЛЬ` на пароль из `scripts/docker-compose.yml`
+**Примечание:** Redis работает без пароля
 
 ### 2.3. Вариант A: Запуск через Kestrel (рекомендуется для разработки)
 
@@ -381,32 +381,6 @@ docker exec bpmsoft-postgres pg_restore -U bpmsoft_user -d bpmsoft -c /tmp/backu
 docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "DROP DATABASE IF EXISTS bpmsoft;"
 docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE DATABASE bpmsoft;"
 Get-Content backup_20240101_120000.sql | docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft
-```
-
-### Резервное копирование Redis
-
-**Создание бэкапа Redis (RDB файл):**
-```powershell
-docker exec bpmsoft-redis redis-cli -a ВАШ_ПАРОЛЬ BGSAVE
-docker cp bpmsoft-redis:/data/dump.rdb redis_backup_$(Get-Date -Format "yyyyMMdd_HHmmss").rdb
-```
-
-**Экспорт всех ключей:**
-```powershell
-docker exec bpmsoft-redis redis-cli -a ВАШ_ПАРОЛЬ --rdb /data/backup.rdb
-docker cp bpmsoft-redis:/data/backup.rdb redis_backup_$(Get-Date -Format "yyyyMMdd_HHmmss").rdb
-```
-
-**Восстановление Redis из бэкапа:**
-```powershell
-# Остановить Redis
-docker-compose stop redis
-
-# Скопировать бэкап в контейнер
-docker cp redis_backup_20240101_120000.rdb bpmsoft-redis:/data/dump.rdb
-
-# Запустить Redis
-docker-compose start redis
 ```
 
 ## Устранение неполадок

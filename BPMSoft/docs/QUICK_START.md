@@ -47,10 +47,10 @@ Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=ВАШ_
 
 **Redis:**
 ```
-localhost:6379,password=ВАШ_ПАРОЛЬ
+localhost:6379
 ```
 
-**Примечание:** Пароли настраиваются в `scripts/docker-compose.yml`
+**Примечание:** Redis работает без пароля
 
 ### 5. Восстановить базу данных из бэкапа
 
@@ -108,7 +108,7 @@ dotnet run
 **Redis 6:**
 - Host: `localhost`
 - Port: `6379`
-- Password: см. `scripts/docker-compose.yml` (если настроен)
+- Password: не требуется (без пароля)
 
 ## Полезные команды
 

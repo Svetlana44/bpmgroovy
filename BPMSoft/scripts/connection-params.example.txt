@@ -46,7 +46,7 @@ BPMSOFT_DEFAULT_PASSWORD=your_default_password
 # docker exec bpmsoft-postgres psql -U your_postgres_user -d bpmsoft -c "SELECT version();"
 
 # Проверка подключения к Redis:
-# docker exec bpmsoft-redis redis-cli -a your_redis_password ping
+# docker exec bpmsoft-redis redis-cli ping
 
 # Создание бэкапа PostgreSQL:
 # docker exec bpmsoft-postgres pg_dump -U your_postgres_user -d bpmsoft > backup_$(Get-Date -Format "yyyyMMdd_HHmmss").sql

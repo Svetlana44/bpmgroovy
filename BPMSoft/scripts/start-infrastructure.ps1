@@ -26,8 +26,8 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "`nИнфраструктура успешно запущена!" -ForegroundColor Green
     Write-Host "`nПараметры подключения:" -ForegroundColor Yellow
     Write-Host "PostgreSQL: localhost:5432, база: bpmsoft, пользователь: bpmsoft_user" -ForegroundColor White
-    Write-Host "Redis: localhost:6379" -ForegroundColor White
-    Write-Host "Пароли см. в docker-compose.yml" -ForegroundColor Gray
+    Write-Host "Redis: localhost:6379 (без пароля)" -ForegroundColor White
+    Write-Host "Пароль PostgreSQL см. в docker-compose.yml" -ForegroundColor Gray
     Write-Host "`nПроверка статуса: docker-compose ps" -ForegroundColor Cyan
     Write-Host "Просмотр логов: docker-compose logs -f" -ForegroundColor Cyan
     Write-Host "Остановка: docker-compose stop" -ForegroundColor Cyan

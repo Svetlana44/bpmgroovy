@@ -37,7 +37,6 @@ BPMSoft/
 
 - **[restore-database.ps1](scripts/restore-database.ps1)** - Восстановление БД из бэкапа
 - **[backup-postgres.ps1](scripts/backup-postgres.ps1)** - Создание бэкапа PostgreSQL
-- **[backup-redis.ps1](scripts/backup-redis.ps1)** - Создание бэкапа Redis
 
 ### Конфигурация
 
@@ -90,7 +89,7 @@ BPMSoft/
 - Host: `localhost`
 - Port: `6379`
 - Database: `1`
-- Password: нет (без пароля)
+- Password: не требуется (без пароля)
 
 ## Рабочая конфигурация
 
