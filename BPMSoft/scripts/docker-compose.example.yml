@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: bpmsoft-postgres
+    environment:
+      POSTGRES_DB: bpmsoft
+      POSTGRES_USER: bpmsoft_user
+      POSTGRES_PASSWORD: ваш_пароль_здесь
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bpmsoft-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bpmsoft_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:6-alpine
+    container_name: bpmsoft-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - bpmsoft-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Раскомментируйте для использования пароля:
+    # command: redis-server --requirepass ваш_пароль_redis
+
+networks:
+  bpmsoft-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+

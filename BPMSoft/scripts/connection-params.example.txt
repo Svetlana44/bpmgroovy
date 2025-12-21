@@ -1,0 +1,62 @@
+# Параметры подключения к инфраструктуре BPMSoft
+# Скопируйте этот файл в connection-params.local.txt и заполните своими значениями
+# Файл connection-params.local.txt находится в .gitignore и не попадет в git
+
+# ============================================
+# PostgreSQL 16
+# ============================================
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DATABASE=bpmsoft
+POSTGRES_USER=your_postgres_user
+POSTGRES_PASSWORD=your_postgres_password
+
+# Строка подключения PostgreSQL (для .NET)
+POSTGRES_CONNECTION_STRING=Host=localhost;Port=5432;Database=bpmsoft;Username=your_postgres_user;Password=your_postgres_password;Pooling=true;
+
+# Строка подключения PostgreSQL (JDBC для Java)
+POSTGRES_JDBC_URL=jdbc:postgresql://localhost:5432/bpmsoft
+POSTGRES_JDBC_USER=your_postgres_user
+POSTGRES_JDBC_PASSWORD=your_postgres_password
+
+# ============================================
+# Redis 6
+# ============================================
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# Строка подключения Redis (для .NET / BPMSoft - формат с точкой с запятой)
+REDIS_CONNECTION_STRING=host=localhost;port=6379;db=1
+
+# Строка подключения Redis (для StackExchange.Redis - альтернативный формат с запятой)
+REDIS_CONFIG=localhost:6379,abortConnect=false
+
+# ============================================
+# BPMSoft приложение
+# ============================================
+# Учетные данные по умолчанию (измените после первого входа!)
+BPMSOFT_DEFAULT_LOGIN=Supervisor
+BPMSOFT_DEFAULT_PASSWORD=your_default_password
+
+# ============================================
+# Полезные команды
+# ============================================
+# Проверка подключения к PostgreSQL:
+# docker exec bpmsoft-postgres psql -U your_postgres_user -d bpmsoft -c "SELECT version();"
+
+# Проверка подключения к Redis:
+# docker exec bpmsoft-redis redis-cli -a your_redis_password ping
+
+# Создание бэкапа PostgreSQL:
+# docker exec bpmsoft-postgres pg_dump -U your_postgres_user -d bpmsoft > backup_$(Get-Date -Format "yyyyMMdd_HHmmss").sql
+
+# Просмотр логов:
+# docker-compose logs -f
+
+# Остановка инфраструктуры:
+# docker-compose stop
+
+# Запуск инфраструктуры:
+# docker-compose up -d
+
