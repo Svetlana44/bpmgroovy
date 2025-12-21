@@ -24,13 +24,13 @@ POSTGRES_JDBC_PASSWORD=your_postgres_password
 # ============================================
 REDIS_HOST=localhost
 REDIS_PORT=6379
-REDIS_PASSWORD=your_redis_password
+REDIS_PASSWORD=
 
-# Строка подключения Redis (для .NET)
-REDIS_CONNECTION_STRING=localhost:6379,password=your_redis_password
+# Строка подключения Redis (для .NET / BPMSoft - формат с точкой с запятой)
+REDIS_CONNECTION_STRING=host=localhost;port=6379;db=1
 
-# Строка подключения Redis (для StackExchange.Redis)
-REDIS_CONFIG=localhost:6379,password=your_redis_password,abortConnect=false
+# Строка подключения Redis (для StackExchange.Redis - альтернативный формат с запятой)
+REDIS_CONFIG=localhost:6379,abortConnect=false
 
 # ============================================
 # BPMSoft приложение
@@ -46,7 +46,7 @@ BPMSOFT_DEFAULT_PASSWORD=your_default_password
 # docker exec bpmsoft-postgres psql -U your_postgres_user -d bpmsoft -c "SELECT version();"
 
 # Проверка подключения к Redis:
-# docker exec bpmsoft-redis redis-cli -a your_redis_password ping
+# docker exec bpmsoft-redis redis-cli ping
 
 # Создание бэкапа PostgreSQL:
 # docker exec bpmsoft-postgres pg_dump -U your_postgres_user -d bpmsoft > backup_$(Get-Date -Format "yyyyMMdd_HHmmss").sql

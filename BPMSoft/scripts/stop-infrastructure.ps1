@@ -1,6 +1,8 @@
 # Скрипт для остановки инфраструктуры BPMSoft
 Write-Host "Остановка инфраструктуры BPMSoft..." -ForegroundColor Yellow
 
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $scriptPath
 docker-compose stop
 
 if ($LASTEXITCODE -eq 0) {

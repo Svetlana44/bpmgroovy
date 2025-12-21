@@ -2,8 +2,8 @@
 
 ## Что уже сделано
 
-✅ Создан `docker-compose.yml` для PostgreSQL и Redis  
-✅ Созданы скрипты управления (`start-infrastructure.ps1`, `stop-infrastructure.ps1`)  
+✅ Создан `scripts/docker-compose.yml` для PostgreSQL и Redis  
+✅ Созданы скрипты управления в папке `scripts/`  
 ✅ Создана подробная инструкция (`DEPLOYMENT.md`)
 
 ## Что нужно сделать вам
@@ -23,12 +23,14 @@
 ### 3. Запустить инфраструктуру
 
 ```powershell
-# В PowerShell из корня проекта
+# В PowerShell из папки scripts
+cd BPMSoft\scripts
 .\start-infrastructure.ps1
 ```
 
 Или вручную:
 ```powershell
+cd BPMSoft\scripts
 docker-compose up -d
 ```
 
@@ -40,13 +42,15 @@ docker-compose up -d
 
 **PostgreSQL:**
 ```
-Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=BPMAdmin123!
+Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=ВАШ_ПАРОЛЬ
 ```
 
 **Redis:**
 ```
-localhost:6379,password=BPMAdmin123!
+localhost:6379
 ```
+
+**Примечание:** Redis работает без пароля
 
 ### 5. Восстановить базу данных из бэкапа
 
@@ -86,6 +90,9 @@ dotnet run
 ```
 
 **Вариант B: Через IIS (для продакшена)**
+- **IIS полностью бесплатен** и входит в состав Windows
+- Установите IIS (см. `IIS_INSTALLATION.md` для подробной инструкции)
+- Установите ASP.NET Core Hosting Bundle для .NET 8
 - См. подробную инструкцию в `DEPLOYMENT.md`, раздел "Шаг 2.4"
 
 ## Параметры подключения
@@ -95,13 +102,13 @@ dotnet run
 - Port: `5432`
 - Database: `bpmsoft`
 - User: `bpmsoft_user`
-- Password: `BPMAdmin123!`
+- Password: см. `scripts/docker-compose.yml` (параметр `POSTGRES_PASSWORD`)
 - Доступны утилиты: `pg_dump`, `pg_restore`, `psql`, `pg_dumpall`, `pg_basebackup`
 
 **Redis 6:**
 - Host: `localhost`
 - Port: `6379`
-- Password: `BPMAdmin123!`
+- Password: не требуется (без пароля)
 
 ## Полезные команды
 
@@ -155,7 +162,7 @@ docker exec bpmsoft-postgres pg_dump --version
 1. **SSL сертификаты** - для HTTPS (можно использовать самоподписанные для разработки)
 2. **Настройка брандмауэра** - разрешить порты приложения (5002, 5000, 5001)
 3. **Восстановление БД из бэкапа** - необходимо восстановить БД из файла бэкапа в папке `db` архива (см. шаг 5)
-4. **Учетные данные по умолчанию** - Login: `Supervisor`, Password: `BPMAdmin123!` (или как в документации)
+4. **Учетные данные по умолчанию** - Login: `Supervisor`, Password: см. документацию приложения
 
 ## Подробная документация
 
@@ -166,10 +173,10 @@ docker exec bpmsoft-postgres pg_dump --version
 **Контейнеры не запускаются:**
 - Проверьте, что Docker Desktop запущен
 - Проверьте, что порты 5432 и 6379 свободны
-- Смотрите логи: `docker-compose logs`
+- Перейдите в папку `BPMSoft\scripts` и смотрите логи: `docker-compose logs`
 
 **Приложение не подключается к БД:**
-- Убедитесь, что контейнеры запущены: `docker-compose ps`
+- Убедитесь, что контейнеры запущены: `cd BPMSoft\scripts; docker-compose ps`
 - Проверьте строку подключения в конфигурации
 - Проверьте логи приложения
 

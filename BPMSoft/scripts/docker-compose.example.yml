@@ -7,17 +7,15 @@ services:
     environment:
       POSTGRES_DB: bpmsoft
       POSTGRES_USER: bpmsoft_user
-      POSTGRES_PASSWORD: BPMAdmin123!
-      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_PASSWORD: ваш_пароль_здесь
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - bpmsoft-network
-    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U bpmsoft_user -d bpmsoft"]
+      test: ["CMD-SHELL", "pg_isready -U bpmsoft_user"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,21 +29,19 @@ services:
       - redis_data:/data
     networks:
       - bpmsoft-network
-    restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass BPMAdmin123!
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "BPMAdmin123!", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
-      timeout: 3s
+      timeout: 5s
       retries: 5
-
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
+    # Раскомментируйте для использования пароля:
+    # command: redis-server --requirepass ваш_пароль_redis
 
 networks:
   bpmsoft-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
 

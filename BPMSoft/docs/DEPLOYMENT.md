@@ -42,8 +42,10 @@
    - Проверьте установку: `dotnet --version`
 
 3. **IIS (опционально, для развертывания через IIS)**
-   - Включите через "Программы и компоненты" → "Включение или отключение компонентов Windows"
-   - Установите модули: ASP.NET Core Module, URL Rewrite
+   - IIS полностью бесплатен и входит в состав Windows
+   - **Подробная инструкция по установке:** см. `IIS_INSTALLATION.md`
+   - Кратко: "Программы и компоненты" → "Включение или отключение компонентов Windows" → включите "Службы IIS"
+   - После установки IIS установите ASP.NET Core Hosting Bundle для .NET 8
 
 4. **Архив BPMSoft**
    - У вас уже есть: `C:\Users\playg\Downloads\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL.zip`
@@ -52,10 +54,17 @@
 
 ### 1.1. Запуск контейнеров
 
-Откройте PowerShell в корне проекта и выполните:
+Откройте PowerShell в папке `BPMSoft\scripts` и выполните:
 
 ```powershell
+cd BPMSoft\scripts
 docker-compose up -d
+```
+
+Или используйте скрипт:
+```powershell
+cd BPMSoft\scripts
+.\start-infrastructure.ps1
 ```
 
 Эта команда:
@@ -84,7 +93,7 @@ docker exec -it bpmsoft-postgres pg_dump --version
 docker exec -it bpmsoft-postgres psql --version
 
 # Проверить подключение к Redis
-docker exec -it bpmsoft-redis redis-cli -a BPMAdmin123! ping
+docker exec -it bpmsoft-redis redis-cli ping
 ```
 
 ### 1.3. Параметры подключения
@@ -94,14 +103,14 @@ docker exec -it bpmsoft-redis redis-cli -a BPMAdmin123! ping
 - Port: `5432`
 - Database: `bpmsoft`
 - User: `bpmsoft_user`
-- Password: `BPMAdmin123!`
-- Connection String: `Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=BPMAdmin123!`
+- Password: см. `scripts/docker-compose.yml` (параметр `POSTGRES_PASSWORD`)
+- Connection String: `Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=ВАШ_ПАРОЛЬ`
 
 **Redis:**
 - Host: `localhost` (или `127.0.0.1`)
 - Port: `6379`
-- Password: `BPMAdmin123!`
-- Connection String: `localhost:6379,password=BPMAdmin123!`
+- Password: не требуется (без пароля)
+- Connection String: `localhost:6379`
 
 ## Шаг 2: Развертывание приложения BPMSoft
 
@@ -120,7 +129,7 @@ C:\BPMSoft\
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=BPMAdmin123!;Pooling=true;"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=bpmsoft;Username=bpmsoft_user;Password=ВАШ_ПАРОЛЬ;Pooling=true;"
   }
 }
 ```
@@ -129,11 +138,13 @@ C:\BPMSoft\
 ```json
 {
   "Redis": {
-    "ConnectionString": "localhost:6379,password=BPMAdmin123!",
+    "ConnectionString": "localhost:6379",
     "InstanceName": "BPMSoft:"
   }
 }
 ```
+
+**Примечание:** Redis работает без пароля
 
 ### 2.3. Вариант A: Запуск через Kestrel (рекомендуется для разработки)
 
@@ -150,6 +161,10 @@ dotnet run
 Приложение будет доступно по адресу, указанному в конфигурации (обычно `http://localhost:5000` или `https://localhost:5001`)
 
 ### 2.4. Вариант B: Развертывание через IIS
+
+**Важно:** Перед развертыванием убедитесь, что:
+- IIS установлен (см. `IIS_INSTALLATION.md` для подробной инструкции)
+- Установлен ASP.NET Core Hosting Bundle для .NET 8
 
 1. **Создайте сайт в IIS:**
    - Откройте IIS Manager
@@ -273,32 +288,39 @@ docker exec bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft -c "SELECT count(*)
 1. Откройте браузер и перейдите по адресу приложения
 2. Войдите с учетными данными по умолчанию:
    - Login: `Supervisor`
-   - Password: `BPMAdmin123!` (или как указано в документации)
+   - Password: см. `scripts/docker-compose.yml` (параметр `POSTGRES_PASSWORD`)
 
 ## Управление контейнерами
 
 ### Остановка контейнеров
 ```powershell
+cd BPMSoft\scripts
+.\stop-infrastructure.ps1
+# или
 docker-compose stop
 ```
 
 ### Запуск контейнеров
 ```powershell
+cd BPMSoft\scripts
 docker-compose start
 ```
 
 ### Остановка и удаление контейнеров (данные сохранятся в volumes)
 ```powershell
+cd BPMSoft\scripts
 docker-compose down
 ```
 
 ### Полное удаление контейнеров и данных
 ```powershell
+cd BPMSoft\scripts
 docker-compose down -v
 ```
 
 ### Просмотр логов
 ```powershell
+cd BPMSoft\scripts
 docker-compose logs -f
 ```
 
@@ -361,41 +383,15 @@ docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE DATA
 Get-Content backup_20240101_120000.sql | docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft
 ```
 
-### Резервное копирование Redis
-
-**Создание бэкапа Redis (RDB файл):**
-```powershell
-docker exec bpmsoft-redis redis-cli -a BPMAdmin123! BGSAVE
-docker cp bpmsoft-redis:/data/dump.rdb redis_backup_$(Get-Date -Format "yyyyMMdd_HHmmss").rdb
-```
-
-**Экспорт всех ключей:**
-```powershell
-docker exec bpmsoft-redis redis-cli -a BPMAdmin123! --rdb /data/backup.rdb
-docker cp bpmsoft-redis:/data/backup.rdb redis_backup_$(Get-Date -Format "yyyyMMdd_HHmmss").rdb
-```
-
-**Восстановление Redis из бэкапа:**
-```powershell
-# Остановить Redis
-docker-compose stop redis
-
-# Скопировать бэкап в контейнер
-docker cp redis_backup_20240101_120000.rdb bpmsoft-redis:/data/dump.rdb
-
-# Запустить Redis
-docker-compose start redis
-```
-
 ## Устранение неполадок
 
 ### Проблема: Контейнеры не запускаются
 - Проверьте, что Docker Desktop запущен
 - Проверьте, что порты 5432 и 6379 не заняты другими приложениями
-- Проверьте логи: `docker-compose logs`
+- Перейдите в папку `BPMSoft\scripts` и проверьте логи: `docker-compose logs`
 
 ### Проблема: Приложение не подключается к БД
-- Убедитесь, что контейнеры запущены: `docker-compose ps`
+- Убедитесь, что контейнеры запущены: `cd BPMSoft\scripts; docker-compose ps`
 - Проверьте строку подключения в конфигурации
 - Проверьте, что используется правильный хост (`localhost` или `127.0.0.1`)
 
@@ -407,9 +403,10 @@ docker-compose start redis
 
 ### Изменение паролей
 
-Если нужно изменить пароли, отредактируйте `docker-compose.yml` и пересоздайте контейнеры:
+Если нужно изменить пароли, отредактируйте `BPMSoft\scripts\docker-compose.yml` и пересоздайте контейнеры:
 
 ```powershell
+cd BPMSoft\scripts
 docker-compose down -v
 docker-compose up -d
 ```
@@ -418,7 +415,7 @@ docker-compose up -d
 
 ### Изменение портов
 
-Если порты 5432 или 6379 заняты, измените маппинг портов в `docker-compose.yml`:
+Если порты 5432 или 6379 заняты, измените маппинг портов в `BPMSoft\scripts\docker-compose.yml`:
 
 ```yaml
 ports:

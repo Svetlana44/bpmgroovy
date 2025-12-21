@@ -45,6 +45,8 @@ bin/
 
 ### BPMSoft Connection Parameters ###
 # Файлы с параметрами подключения (содержат пароли и чувствительные данные)
-connection-params.local.txt
-*.local.txt
-*.local.properties
+BPMSoft/scripts/connection-params.local.txt
+BPMSoft/scripts/*.local.txt
+BPMSoft/scripts/*.local.properties
+# Docker compose с паролями (используй docker-compose.example.yml как шаблон)
+BPMSoft/scripts/docker-compose.yml
