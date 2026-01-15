@@ -21,6 +21,7 @@
 - `collections_streams.md` — коллекции и Stream API
 - `concurrency_jvm.md` — потоки, синхронизация, JVM
 - `oop_patterns.md` — ООП и паттерны в автотестах
+- `csharp_for_java_senior.md` — C# для Java‑сеньора, ответы для заучивания
 
 ## CI/CD и процессы
 
