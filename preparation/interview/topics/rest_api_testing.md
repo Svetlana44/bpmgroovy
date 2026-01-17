@@ -39,7 +39,9 @@ given()
 Проверка `page/size`, сортировки, корректности метаданных и стабильности.
 
 **8. Какие инструменты ты используешь?**  
-RestAssured, Postman, Wiremock, Pact, OpenAPI Validator.
+RestAssured, Postman, Wiremock, OpenAPI Validator.
+
+См. пример моков: `../../examples/contract/WiremockExampleTest.java`.
 
 **9. Что такое contract‑first?**  
 API сначала описывается в OpenAPI, затем реализация и тесты валидируются

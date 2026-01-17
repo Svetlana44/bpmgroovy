@@ -3,6 +3,7 @@ package leetcode.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,22 @@ class StringEasyTasks {
     ┌──────────────────────────────────────────────────────────────┐
     │ Valid Anagram (Easy)                                          │
     │ Верни true, если t — анаграмма s.                             │
+    │ Анаграмма — это строка, полученная перестановкой символов     │
+    │ другой строки без добавления или удаления символов.           │
+    │ Примеры входных данных и ожидаемых результатов — в тестах.     │
     └──────────────────────────────────────────────────────────────┘
     */
     boolean isAnagram(String s, String t) {
-        throw new UnsupportedOperationException("TODO");
+
+       if (s.length() != t.length()) {
+        return false;
+       }
+     char[] chS =s.toCharArray();
+     char[] chT =t.toCharArray();
+     Arrays.sort(chS);
+     Arrays.sort(chT);
+     return Arrays.equals(chS, chT);
+
     }
 
     /*
@@ -30,7 +43,7 @@ class StringEasyTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     String reverseString(String s) {
-        throw new UnsupportedOperationException("TODO");
+        return new StringBuilder(s).reverse().toString();
     }
 
     /*
@@ -46,7 +59,7 @@ class StringEasyTasks {
     /*
     ┌──────────────────────────────────────────────────────────────┐
     │ Valid Palindrome (Easy)                                       │
-    │ Игнорируй регистр и неалфанум.                                │
+    │ Игнорируй регистр и не алфавитно-цифровые символы.             │
     └──────────────────────────────────────────────────────────────┘
     */
     boolean isPalindrome(String s) {

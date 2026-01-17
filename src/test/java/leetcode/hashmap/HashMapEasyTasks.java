@@ -4,7 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.xmlbeans.impl.xb.xsdschema.Group;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,10 +22,37 @@ class HashMapEasyTasks {
     ┌──────────────────────────────────────────────────────────────┐
     │ Ransom Note (Easy)                                            │
     │ Верни true, если ransom можно составить из magazine.          │
+    │ Примеры:                                                      │
+    │   ransom="aa", magazine="aab" → true                          │
+    │   ransom="aa", magazine="ab"  → false                         │
+    │ Идея: посчитать частоты (HashMap). Массивом тоже можно        │
+    │ при ограниченном алфавите.                                    │
     └──────────────────────────────────────────────────────────────┘
     */
     boolean canConstruct(String ransomNote, String magazine) {
-        throw new UnsupportedOperationException("TODO");
+
+        boolean result = false;
+        if (ransomNote.length() > magazine.length()) {
+            return result;
+        }
+        HashMap<Character, Integer> resours = new HashMap<Character, Integer>();
+        for (int i = 0; i < ransomNote.length(); i++) {
+            resours.merge(ransomNote.charAt(i), 1, Integer::sum);
+
+        }
+
+        HashMap<Character,Integer>target=new HashMap<>();
+        for (int i = 0; i < magazine.length(); i++) {
+            target.merge(magazine.charAt(i),1,Integer::sum);
+        }
+        for(Map.Entry<Character,Integer> entry:resours.entrySet()){
+            if(target.containsKey(entry.getKey()) && target.get(entry.getKey()) >= entry.getValue()){
+                result = true;
+            } 
+        }
+
+
+        return result;
     }
 
     /*
@@ -98,41 +130,41 @@ class HashMapEasyTasks {
 
     private static Stream<Arguments> ransomProvider() {
         return Stream.of(
-            Arguments.of("a", "b", false),
-            Arguments.of("aa", "ab", false),
-            Arguments.of("aa", "aab", true)
+                Arguments.of("a", "b", false),
+                Arguments.of("aa", "ab", false),
+                Arguments.of("aa", "aab", true)
         );
     }
 
     private static Stream<Arguments> majorityProvider() {
         return Stream.of(
-            Arguments.of(new int[] {3, 2, 3}, 3),
-            Arguments.of(new int[] {2, 2, 1, 1, 1, 2, 2}, 2),
-            Arguments.of(new int[] {1}, 1)
+                Arguments.of(new int[]{3, 2, 3}, 3),
+                Arguments.of(new int[]{2, 2, 1, 1, 1, 2, 2}, 2),
+                Arguments.of(new int[]{1}, 1)
         );
     }
 
     private static Stream<Arguments> isomorphicProvider() {
         return Stream.of(
-            Arguments.of("egg", "add", true),
-            Arguments.of("foo", "bar", false),
-            Arguments.of("paper", "title", true)
+                Arguments.of("egg", "add", true),
+                Arguments.of("foo", "bar", false),
+                Arguments.of("paper", "title", true)
         );
     }
 
     private static Stream<Arguments> differenceProvider() {
         return Stream.of(
-            Arguments.of("abcd", "abcde", 'e'),
-            Arguments.of("", "y", 'y'),
-            Arguments.of("a", "aa", 'a')
+                Arguments.of("abcd", "abcde", 'e'),
+                Arguments.of("", "y", 'y'),
+                Arguments.of("a", "aa", 'a')
         );
     }
 
     private static Stream<Arguments> intersectionProvider() {
         return Stream.of(
-            Arguments.of(new int[] {1, 2, 2, 1}, new int[] {2, 2}, new int[] {2}),
-            Arguments.of(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}, new int[] {4, 9}),
-            Arguments.of(new int[] {1}, new int[] {2}, new int[] {})
+                Arguments.of(new int[]{1, 2, 2, 1}, new int[]{2, 2}, new int[]{2}),
+                Arguments.of(new int[]{4, 9, 5}, new int[]{9, 4, 9, 8, 4}, new int[]{4, 9}),
+                Arguments.of(new int[]{1}, new int[]{2}, new int[]{})
         );
     }
 }

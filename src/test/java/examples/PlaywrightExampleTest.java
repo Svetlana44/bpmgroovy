@@ -2,6 +2,8 @@ package examples;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.Cookie;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,10 +47,8 @@ public class PlaywrightExampleTest {
     @BeforeEach
     void createContext() {
         // Создаем новый контекст для каждого теста (изоляция)
-        context = browser.newContext();
-        
-        // Настраиваем опции контекста
-        context.setViewportSize(1920, 1080);
+        context = browser.newContext(new Browser.NewContextOptions()
+                .setViewportSize(1920, 1080));
         
         // Создаем новую страницу
         page = context.newPage();
@@ -180,7 +180,7 @@ public class PlaywrightExampleTest {
         
         // Устанавливаем cookie
         context.addCookies(java.util.Arrays.asList(
-                new BrowserContext.AddCookieOptions("test", "value")
+                new Cookie("test", "value")
                         .setDomain("example.com")
                         .setPath("/")
         ));

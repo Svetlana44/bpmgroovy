@@ -117,10 +117,6 @@ dependencies {
     // Wiremock для создания заглушек HTTP сервисов
     testImplementation 'com.github.tomakehurst:wiremock-jre8:2.35.0'
     
-    // Pact для контрактного тестирования
-    testImplementation 'au.com.dius.pact.consumer:junit5:4.6.2'
-    testImplementation 'au.com.dius.pact.provider:junit5:4.6.2'
-    
     // Playwright для UI тестирования
     testImplementation 'com.microsoft.playwright:playwright:1.40.0'
     

@@ -18,3 +18,7 @@ find, insertOne, updateOne, deleteOne, aggregate.
 ```javascript
 db.users.find({ status: "active" })
 ```
+
+---
+
+См. пример: `../../examples/database/MongoDBExampleTest.java`.

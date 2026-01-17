@@ -76,7 +76,7 @@ public class WiremockExampleTest {
     void testPostStubWithBodyMatching() {
         // Настраиваем заглушку для POST с проверкой тела запроса
         stubFor(post(urlEqualTo("/api/users"))
-                .withRequestBody(matchingJsonPath("$.name", equalTo("Jane Doe")))
+                .withRequestBody(matchingJsonPath("$.name", WireMock.equalTo("Jane Doe")))
                 .willReturn(aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
@@ -106,8 +106,8 @@ public class WiremockExampleTest {
     void testStubWithQueryParameters() {
         // Заглушка для запроса с query параметрами
         stubFor(get(urlPathEqualTo("/api/users"))
-                .withQueryParam("page", equalTo("1"))
-                .withQueryParam("size", equalTo("10"))
+                .withQueryParam("page", WireMock.equalTo("1"))
+                .withQueryParam("size", WireMock.equalTo("10"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -165,6 +165,7 @@ public class WiremockExampleTest {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withFixedDelay(2000)  // Задержка в миллисекундах
+                        .withHeader("Content-Type", "application/json")
                         .withBody("{\"message\": \"Delayed response\"}")));
 
         given()
@@ -185,6 +186,7 @@ public class WiremockExampleTest {
                 .withHeader("Authorization", matching("Bearer .+"))
                 .willReturn(aResponse()
                         .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
                         .withBody("{\"message\": \"Authorized\"}")));
 
         given()

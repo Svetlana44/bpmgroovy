@@ -22,3 +22,23 @@ map преобразует элемент, flatMap разворачивает в
 
 **7. Что важно на Senior‑уровне?**  
 Выбор структуры данных под задачу и влияние на сложность/производительность.
+
+## Туториалы
+
+- `collections_streams_tutorials/README.md` — индекс по туториалам с последовательностью.
+
+## LeetCode упражнения
+
+### Easy (6)
+
+- Two Sum — https://leetcode.com/problems/two-sum/
+- Contains Duplicate — https://leetcode.com/problems/contains-duplicate/
+- Valid Anagram — https://leetcode.com/problems/valid-anagram/
+- First Unique Character in a String — https://leetcode.com/problems/first-unique-character-in-a-string/
+- Intersection of Two Arrays — https://leetcode.com/problems/intersection-of-two-arrays/
+- Ransom Note — https://leetcode.com/problems/ransom-note/
+
+### Medium (2)
+
+- Group Anagrams — https://leetcode.com/problems/group-anagrams/
+- Top K Frequent Elements — https://leetcode.com/problems/top-k-frequent-elements/

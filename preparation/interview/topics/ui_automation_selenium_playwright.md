@@ -37,3 +37,7 @@ void login() {
   assertThat(page.locator(".welcome")).isVisible();
 }
 ```
+
+---
+
+См. пример: `../../examples/ui/PlaywrightExampleTest.java`.
