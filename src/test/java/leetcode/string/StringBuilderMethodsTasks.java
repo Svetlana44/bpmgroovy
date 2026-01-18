@@ -45,7 +45,9 @@ class StringBuilderMethodsTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     String deleteSubstring(String s, int start, int end) {
-        throw new UnsupportedOperationException("TODO");
+        return new StringBuilder(s)
+                .delete(start, end)
+                .toString();
     }
 
     /*
@@ -55,7 +57,9 @@ class StringBuilderMethodsTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     String deleteCharAt(String s, int index) {
-        throw new UnsupportedOperationException("TODO");
+        return new StringBuilder(s)
+                .deleteCharAt(index)
+                .toString();
     }
 
     /*
@@ -65,7 +69,9 @@ class StringBuilderMethodsTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     String replaceSubstring(String s, int start, int end, String replacement) {
-        throw new UnsupportedOperationException("TODO");
+        return new StringBuilder(s)
+                .replace(start, end, replacement)
+                .toString();
     }
 
     /*
@@ -75,7 +81,9 @@ class StringBuilderMethodsTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     String reverseString(String s) {
-        throw new UnsupportedOperationException("TODO");
+        return new StringBuilder(s)
+                .reverse()
+                .toString();
     }
 
     /*
@@ -85,28 +93,33 @@ class StringBuilderMethodsTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     int getLength(String s) {
-        throw new UnsupportedOperationException("TODO");
+        return s.length();
     }
 
     /*
     ┌──────────────────────────────────────────────────────────────┐
     │ Capacity Exercise                                            │
-    │ Верни ёмкость буфера для строки s.                            │
+    │ Создай StringBuilder из строки s и верни его capacity.       │
+    │ Capacity — размер внутреннего буфера (обычно length + 16).   │
     └──────────────────────────────────────────────────────────────┘
     */
     int getCapacity(String s) {
-        throw new UnsupportedOperationException("TODO");
+        return new StringBuilder(s).capacity();
     }
 
     /*
     ┌──────────────────────────────────────────────────────────────┐
     │ Complex Exercise: Build String with Multiple Operations      │
-    │ Построй строку: добавь prefix, вставь middle в позицию 5,    │
-    │ замени последние 3 символа на suffix.                         │
+    │ Построй строку: начни с prefix (длина >= 5),                 │
+    │ вставь middle в позицию 5, замени последние 4 символа        │
+    │ на suffix.                   │
     └──────────────────────────────────────────────────────────────┘
     */
     String buildComplexString(String prefix, String middle, String suffix) {
-        throw new UnsupportedOperationException("TODO");
+        StringBuilder sb = new StringBuilder(prefix);
+        sb.insert(5, middle);
+        sb.replace(sb.length() - 4, sb.length(), suffix);
+        return sb.toString();
     }
 
     @ParameterizedTest
@@ -153,10 +166,8 @@ class StringBuilderMethodsTasks {
 
     @ParameterizedTest
     @MethodSource("getCapacityProvider")
-    void getCapacity_shouldReturnCapacity(String input) {
-        int capacity = getCapacity(input);
-        // Capacity всегда >= length + 16 (по умолчанию)
-        assert capacity >= input.length() + 16 || capacity >= input.length();
+    void getCapacity_shouldReturnCapacity(String input, int expected) {
+        assertEquals(expected, getCapacity(input));
     }
 
     @ParameterizedTest
@@ -206,7 +217,7 @@ class StringBuilderMethodsTasks {
                 Arguments.of("Hello World", 6, 11, "Java", "Hello Java"),
                 Arguments.of("abc", 1, 2, "X", "aXc"),
                 Arguments.of("test", 0, 4, "new", "new"),
-                Arguments.of("replace", 2, 5, "XXX", "reXXXace")
+                Arguments.of("replace", 2, 5, "XXX", "reXXXce")
         );
     }
 
@@ -230,18 +241,25 @@ class StringBuilderMethodsTasks {
 
     private static Stream<Arguments> getCapacityProvider() {
         return Stream.of(
-                Arguments.of("hello"),
-                Arguments.of(""),
-                Arguments.of("test"),
-                Arguments.of("a")
+                Arguments.of("hello", 21),  // 5 + 16
+                Arguments.of("", 16),       // 0 + 16
+                Arguments.of("test", 20),   // 4 + 16
+                Arguments.of("a", 17)       // 1 + 16
         );
     }
 
     private static Stream<Arguments> buildComplexStringProvider() {
+        // prefix (>=5 символов), middle, suffix -> результат
+        // Логика: insert(5, middle), replace(length-4, length, suffix)
         return Stream.of(
-                Arguments.of("prefix", "MID", "END", "prefiMIDEND"),
-                Arguments.of("abc", "X", "Z", "abcXZ"),
-                Arguments.of("test", "middle", "suf", "testmiddleuf")
+                // "prefix" -> insert(5,"MID") -> "prefiMIDx" -> replace(5,9,"END") -> "prefiEND"
+                Arguments.of("prefix", "MID", "END", "prefiEND"),
+                // "ABCDEFGH" -> insert(5,"123") -> "ABCDE123FGH" -> replace(7,11,"XY") -> "ABCDE12XY"
+                Arguments.of("ABCDEFGH", "123", "XY", "ABCDE12XY"),
+                // "Hello!" -> insert(5," World") -> "Hello World!" -> replace(8,12,"!!!") -> "Hello Wo!!!"
+                Arguments.of("Hello!", " World", "!!!", "Hello Wo!!!"),
+                // "abcde" -> insert(5,"") -> "abcde" -> replace(1,5,"Z") -> "aZ"
+                Arguments.of("abcde", "", "Z", "aZ")
         );
     }
 }

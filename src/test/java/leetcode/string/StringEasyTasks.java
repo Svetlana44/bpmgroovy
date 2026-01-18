@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +25,11 @@ class StringEasyTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     boolean isAnagram(String s, String t) {
-        throw new UnsupportedOperationException("TODO");
+        char[] chS = s.toCharArray();
+        Arrays.sort(chS);
+        char[] chT = t.toCharArray();
+        Arrays.sort(chT);
+        return Arrays.equals(chS, chT);
     }
 
     /*
@@ -104,41 +109,41 @@ class StringEasyTasks {
 
     private static Stream<Arguments> anagramProvider() {
         return Stream.of(
-            Arguments.of("anagram", "nagaram", true),
-            Arguments.of("rat", "car", false),
-            Arguments.of("aacc", "ccac", false)
+                Arguments.of("anagram", "nagaram", true),
+                Arguments.of("rat", "car", false),
+                Arguments.of("aacc", "ccac", false)
         );
     }
 
     private static Stream<Arguments> reverseProvider() {
         return Stream.of(
-            Arguments.of("hello", "olleh"),
-            Arguments.of("a", "a"),
-            Arguments.of("ab", "ba")
+                Arguments.of("hello", "olleh"),
+                Arguments.of("a", "a"),
+                Arguments.of("ab", "ba")
         );
     }
 
     private static Stream<Arguments> firstUniqueProvider() {
         return Stream.of(
-            Arguments.of("leetcode", 0),
-            Arguments.of("loveleetcode", 2),
-            Arguments.of("aabb", -1)
+                Arguments.of("leetcode", 0),
+                Arguments.of("loveleetcode", 2),
+                Arguments.of("aabb", -1)
         );
     }
 
     private static Stream<Arguments> palindromeProvider() {
         return Stream.of(
-            Arguments.of("A man, a plan, a canal: Panama", true),
-            Arguments.of("race a car", false),
-            Arguments.of(" ", true)
+                Arguments.of("A man, a plan, a canal: Panama", true),
+                Arguments.of("race a car", false),
+                Arguments.of(" ", true)
         );
     }
 
     private static Stream<Arguments> prefixProvider() {
         return Stream.of(
-            Arguments.of(new String[] {"flower", "flow", "flight"}, "fl"),
-            Arguments.of(new String[] {"dog", "racecar", "car"}, ""),
-            Arguments.of(new String[] {"interview", "internet", "internal"}, "inte")
+                Arguments.of(new String[]{"flower", "flow", "flight"}, "fl"),
+                Arguments.of(new String[]{"dog", "racecar", "car"}, ""),
+                Arguments.of(new String[]{"interview", "internet", "internal"}, "inte")
         );
     }
 }

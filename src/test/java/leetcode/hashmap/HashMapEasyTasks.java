@@ -41,14 +41,14 @@ class HashMapEasyTasks {
 
         }
 
-        HashMap<Character,Integer>target=new HashMap<>();
+        HashMap<Character, Integer> target = new HashMap<>();
         for (int i = 0; i < magazine.length(); i++) {
-            target.merge(magazine.charAt(i),1,Integer::sum);
+            target.merge(magazine.charAt(i), 1, Integer::sum);
         }
-        for(Map.Entry<Character,Integer> entry:resours.entrySet()){
-            if(target.containsKey(entry.getKey()) && target.get(entry.getKey()) >= entry.getValue()){
+        for (Map.Entry<Character, Integer> entry : resours.entrySet()) {
+            if (target.containsKey(entry.getKey()) && target.get(entry.getKey()) >= entry.getValue()) {
                 result = true;
-            } 
+            }
         }
 
 
@@ -58,11 +58,23 @@ class HashMapEasyTasks {
     /*
     ┌──────────────────────────────────────────────────────────────┐
     │ Majority Element (Easy)                                       │
-    │ Верни элемент, встречающийся > n/2 раз.                       │
+    │ Верни элемент, встречающийся > n/2 раз (строго больше половины│
+    │ длины массива). Например: n=7 → нужно > 3.5, т.е. минимум 4.  │
+    │ Гарантируется, что такой элемент всегда существует.           │
     └──────────────────────────────────────────────────────────────┘
     */
     int majorityElement(int[] nums) {
-        throw new UnsupportedOperationException("TODO");
+        int count = nums.length / 2;
+        HashMap<Integer, Integer> numsCount = new HashMap<>();
+        for (int n : nums) {
+            numsCount.merge(n, 1, Integer::sum);
+        }
+        for (int k : nums) {
+            if (numsCount.get(k).intValue() > count) {
+                return k;
+            }
+        }
+        return 0;
     }
 
     /*
