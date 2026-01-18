@@ -48,7 +48,7 @@
    - После установки IIS установите ASP.NET Core Hosting Bundle для .NET 8
 
 4. **Архив BPMSoft**
-   - У вас уже есть: `C:\Users\playg\Downloads\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL.zip`
+   - У вас уже есть архив: `BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL.zip`
 
 ## Шаг 1: Развертывание инфраструктуры (PostgreSQL и Redis)
 
@@ -194,7 +194,7 @@ dotnet run
 
 Файл бэкапа обычно находится в папке `db` распакованного архива, например:
 ```
-C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup
+<путь_к_распакованному_архиву>\db\BPMSoft_Full_House_1.6.0.190.backup
 ```
 
 Или в другой директории, куда вы распаковали архив:
@@ -213,7 +213,7 @@ docker exec bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE ROLE sa
 
 2. Скопируйте файл бэкапа в контейнер:
 ```powershell
-docker cp "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup" bpmsoft-postgres:/tmp/bpmsoft.backup
+docker cp "<путь_к_распакованному_архиву>\db\BPMSoft_Full_House_1.6.0.190.backup" bpmsoft-postgres:/tmp/bpmsoft.backup
 ```
 
 3. Восстановите базу данных (используйте `--no-owner` и `--no-privileges` для избежания ошибок с ролью sa):
@@ -227,7 +227,7 @@ docker exec bpmsoft-postgres pg_restore -U bpmsoft_user -d bpmsoft --no-owner --
 
 Если файл имеет расширение `.sql` вместо `.backup`:
 ```powershell
-Get-Content "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.sql" | docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft
+Get-Content "<путь_к_распакованному_архиву>\db\BPMSoft_Full_House_1.6.0.190.sql" | docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d bpmsoft
 ```
 
 **Вариант C: Восстановление с пересозданием базы данных**
@@ -244,7 +244,7 @@ docker exec -i bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "CREATE DATA
 docker exec bpmsoft-postgres psql -U bpmsoft_user -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'sa') THEN CREATE ROLE sa WITH SUPERUSER CREATEDB CREATEROLE LOGIN; END IF; END \$\$;"
 
 # Восстановить из бэкапа
-docker cp "C:\inetpub\www\BPMSoft_Full_House_1.6.0.190_Net8_PostgreSQL\db\BPMSoft_Full_House_1.6.0.190.backup" bpmsoft-postgres:/tmp/bpmsoft.backup
+docker cp "<путь_к_распакованному_архиву>\db\BPMSoft_Full_House_1.6.0.190.backup" bpmsoft-postgres:/tmp/bpmsoft.backup
 docker exec bpmsoft-postgres pg_restore -U bpmsoft_user -d bpmsoft --no-owner --no-privileges -c /tmp/bpmsoft.backup
 ```
 
