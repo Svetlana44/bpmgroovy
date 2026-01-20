@@ -1,15 +1,15 @@
 package leetcode.hashmap;
 
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.xmlbeans.impl.xb.xsdschema.Group;
+import org.checkerframework.checker.units.qual.K;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -84,7 +84,31 @@ class HashMapEasyTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     boolean isIsomorphic(String s, String t) {
-        throw new UnsupportedOperationException("TODO");
+        if (s.length() != t.length()) return false;
+
+        Map<Character, Character> sToT = new HashMap<>();  // s -> t
+        Map<Character, Character> tToS = new HashMap<>();  // t -> s
+
+        for (int i = 0; i < s.length(); i++) {
+            char sc = s.charAt(i);
+            char tc = t.charAt(i);
+
+            // Проверяем s -> t
+            if (sToT.containsKey(sc)) {
+                if (sToT.get(sc) != tc) return false;  // 'o' уже -> 'a', но нужен 'r'
+            } else {
+                sToT.put(sc, tc);
+            }
+
+            // Проверяем t -> s (чтобы разные символы s не указывали на один tc)
+            if (tToS.containsKey(tc)) {
+                if (tToS.get(tc) != sc) return false;
+            } else {
+                tToS.put(tc, sc);
+            }
+        }
+
+        return true;
     }
 
     /*
@@ -94,7 +118,28 @@ class HashMapEasyTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     char findTheDifference(String s, String t) {
-        throw new UnsupportedOperationException("TODO");
+        char res = ' ';
+        Map<Character, Integer> sMap = new HashMap<>();
+        Map<Character, Integer> tMap = new HashMap<>();
+
+        for (int i = 0; i < t.length(); i++) {
+            tMap.merge(t.charAt(i), 1, Integer::sum);
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            sMap.merge(s.charAt(i), 1, Integer::sum);
+        }
+        for (Map.Entry<Character, Integer> entry : tMap.entrySet()) {
+            Character tKey = entry.getKey();
+
+            if (!sMap.containsKey(tKey)) {
+                return (char) entry.getKey();
+            }
+            if (sMap.get(tKey) < tMap.get(tKey)) {
+                return (char) entry.getKey();
+            }
+        }
+        return res;
     }
 
     /*
@@ -104,7 +149,23 @@ class HashMapEasyTasks {
     └──────────────────────────────────────────────────────────────┘
     */
     int[] intersection(int[] nums1, int[] nums2) {
-        throw new UnsupportedOperationException("TODO");
+        Set<Integer> set = new HashSet<>();
+        ArrayList<Integer> list1 = new ArrayList<>();
+        ArrayList<Integer> list2 = new ArrayList<>();
+
+        for (int i = 0; i < nums1.length; i++) {
+            list1.add(nums1[i]);
+        }
+        for (int i = 0; i < nums2.length; i++) {
+            if (list1.contains(nums2[i])) {
+                set.add((Integer) nums2[i]);
+            }
+        }
+
+
+        return set.stream()
+                .mapToInt(i -> (int) i)
+                .toArray();
     }
 
     @ParameterizedTest
